@@ -196,7 +196,64 @@ TensorFlow提供了TensorBoard可视化工具
 
 TensorBoard通过读取TensorFlow的事件文件来运行，需要将数据生成一个序列化的Summary protobuf对象。
 
+```
+import os
+import tensorflow as tf
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+
+def tensorflow_demo():
+    # 原生python加法运算
+    a = 2
+    b = 3
+    c = a + b
+    print("普通加法运算的结果: {}".format(c))
+
+    # TensorFlow实现加法运算
+    a_t = tf.constant(2)
+    b_t = tf.constant(3)
+    c_t = a_t + b_t
+    print("TensorFlow加法运算的结果：{}".format(c_t))
+
+    # 自定义图
+    new_g = tf.Graph()
+    # 在自己的图中定义数据和操作
+    with new_g.as_default():
+        a_new = tf.constant(20)
+        b_new = tf.constant(30)
+        c_new = a_new + b_new
+        print("c_new is: {}".format(c_new))
+        with tf.compat.v1.Session() as sess:
+            c_new_value = sess.run(c_new)
+            print("c_new_value is: {}".format(c_new_value))
+
+            # 可视化
+            # 1、将图写入本地生成events文件
+            tf.compat.v1.summary.FileWriter("./tmp/summary", graph=new_g)
+
+    return None
+
+
+if __name__ == "__main__":
+    # 代码1：TensorFlow的基本结构
+    tensorflow_demo()
+
+```
+
+结果展示：会生成相关文件：![image-20230917175603145](https://raw.githubusercontent.com/1793925850/user-image/master/imgs/202309171756186.png)
+
+#### 2.2.3.2、启动TensorBoard
+
+输入命令：
+
+```shell
+tensorboard --logdir="./tmp/summary" 
+```
+
+![image-20230917175747977](https://raw.githubusercontent.com/1793925850/user-image/master/imgs/202309171757009.png)
+
+最后输入网址即可
 
 ### 2.2.4、OP
 
