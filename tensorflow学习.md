@@ -257,11 +257,35 @@ tensorboard --logdir="./tmp/summary"
 
 ### 2.2.4、OP
 
+数据：Tensor对象
 
+操作：Operation对象——OP
 
+#### 2.2.4.1、常见OP
 
+|      类型      |                         实例                         |
+| :------------: | :--------------------------------------------------: |
+|    标量运算    |  add, sub, mul, div, exp, log, greater, less, equal  |
+|    向量运算    | concat, slice, splot, constant, rank, shape, shuffle |
+|    矩阵运算    |       matmul, matrixinverse, matrixdateminant        |
+|  带状态的运算  |             variable, assign, assignadd              |
+|  神经网络组件  |    softmax, sigmoid, relu, convolution, max_pool     |
+|   存储、恢复   |                    save, restore                     |
+| 队列及同步运算 |     enqueue, dequeue, mutexacquire, mutexrelease     |
+|     控制流     |      merge, switch, enter, leave, nextiteration      |
 
+#### 2.2.4.2、指令名称
 
+每个OP指令都对应一个唯一的名称
+
+一张图对应一个命名空间
+
+**修改指令名称：**
+
+```python
+a = tf.constant(3.0, name="a")
+b = tf.constant(4.0, name="b")
+```
 
 
 
