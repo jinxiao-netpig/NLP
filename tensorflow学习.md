@@ -287,6 +287,13 @@ a = tf.constant(3.0, name="a")
 b = tf.constant(4.0, name="b")
 ```
 
+## 2.3、会话(2.x版本没有)
+
+两种开启方式：
+
+- tf.Session：用于完整的程序当中
+- tf.InteractiveSession：用于交互式上下文中的TensorFlow，例如shell
+
 
 
 
