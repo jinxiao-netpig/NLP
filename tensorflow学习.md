@@ -294,6 +294,38 @@ b = tf.constant(4.0, name="b")
 - tf.Session：用于完整的程序当中
 - tf.InteractiveSession：用于交互式上下文中的TensorFlow，例如shell
 
+## 2.4、张量
+
+### 2.4.1、张量的属性
+
+- type：数据类型
+
+  ![image-20230919212619189](https://raw.githubusercontent.com/1793925850/user-image/master/imgs/202309192126240.png)
+
+- shape：形状(阶)
+
+### 2.4.2、创建张量的指令
+
+- 固定值张量
+
+  ```python
+  # 创建所有元素为零的张量
+  tf.zeros(shape, dtype=tf.float32, name=None)
+  # 创建所有元素为1的张量
+  tf.ones(shape, dtype=tf.float32, name=None)
+  # 创建一个常数张量
+  tf.constant(value, dtype=None, shape=None, name='Const')
+  ```
+
+  
+
+- 随机值张量
+
+  ```python
+  # 从正态分布中输出随机值，由随机正态分布的数字组成的矩阵
+  tf.random_normal(shape, mean=0.0, stddev=1.0, dtype=tf.float32, seed=None, name=None)
+  ```
+
 
 
 
