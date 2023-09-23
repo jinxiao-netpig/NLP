@@ -326,6 +326,38 @@ b = tf.constant(4.0, name="b")
   tf.random_normal(shape, mean=0.0, stddev=1.0, dtype=tf.float32, seed=None, name=None)
   ```
 
+### 2.4.3、张量的变换
+
+#### 2.4.3.1、类型改变
+
+```python
+tf.string_to_number(string_tensor, out_type=None, name=None)
+
+# 通用类型转换
+tf.cast(x, dtype, name=None) # 不会改变原张量，而是返回一个副本
+```
+
+
+
+#### 2.4.3.2、形状改变
+
+TensorFlow的张量具有两种形状变换，动态形状和静态形状
+
+- tf.reshape
+- tf.set_shape：改变静态形状
+
+关于动态形状和静态形状必须符合以下规则：
+
+- **静态形状**——初始创建张量时的形状
+  - 转换静态形状的时候，**不能跨阶数改变**(也就是张量的维数不能改变)
+  - 对于已经固定的静态形状的张量，不能再次设置静态形状
+  - 使用**占位符**可以使静态形状不固定
+- **动态形状**——
+
+
+
+
+
 
 
 
