@@ -359,9 +359,65 @@ TensorFlow的张量具有两种形状变换，动态形状和静态形状
 
 到官网查要用的方法
 
+## 2.5、变量
+
+这里特指TensorFlow中的变量，用来存储模型参数
+
+**变量的特点：**
+
+- 存储持久化
+- 可修改值
+- 可指定被训练
+
+### 2.5.1、创建变量
+
+```python
+tf.Variable(initial_value=None, trainable=True, collections=None, name=None)
+```
+
+- initial_value：初始化的值
+- trainable：是否被训练
+- collections：新变量将添加到列出的图的集合中collections，默认为[GraphKeys.GLOBAL_VARIABLES]，如果trainable是True，变量也被添加到图形集合GraphKeys.TRAINABLE_VARIABLES
+
+`变量需要显式初始化，才能运行值`
+
+```python
+def variable_demo():
+    """
+    变量的演示
+    :return:
+    """
+
+    # 创建变量
+    a = tf.Variable(initial_value=50)
+    b = tf.Variable(initial_value=40)
+    c = tf.add(a, b)
+
+    print("a: {}".format(a))
+    print("b: {}".format(b))
+    print("c: {}".format(c))
+    print("type(c): {}".format(type(c)))
+
+    return None
+
+
+if __name__ == "__main__":
+    # 代码5：变量的演示
+    variable_demo()
+```
 
 
 
+### 2.5.2、使用tf.variable_scope()修改变量的命名空间
+
+```python
+# 修改命名空间，方便可视化区分各层变量
+with tf.variable_scope("my_scope"):
+    a = tf.Variable(initial_value=50)
+    b = tf.Variable(initial_value=40)
+with tf.variable_scope("your_scope"):
+    c = tf.add(a, b)
+```
 
 
 
