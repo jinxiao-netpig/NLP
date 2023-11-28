@@ -21,6 +21,73 @@ Constrained Fast Search for Density Peaks，一种聚类算法，基于密度峰
 8. **聚类分配：**
    CFSFDP算法将每个数据点分配到最近的聚类中心点，形成最终的聚类结果。
 
+# 代码（GPT版）
+
+```python
+import numpy as np
+from scipy.spatial.distance import euclidean
+
+class CFSFDP:
+    def __init__(self, epsilon, min_pts, threshold):
+        self.epsilon = epsilon  # 距离阈值
+        self.min_pts = min_pts  # 最小邻域数
+        self.threshold = threshold  # 密度峰值阈值
+        self.labels = None  # 聚类标签
+
+    def fit(self, X):
+        n = X.shape[0]  # 数据点数量
+        distances = np.zeros((n, n))  # 存储数据点之间的距离
+
+        # 计算数据点之间的距离
+        for i in range(n):
+            for j in range(i+1, n):
+                distances[i][j] = euclidean(X[i], X[j])
+                distances[j][i] = distances[i][j]
+
+        # 计算每个数据点的局部密度
+        density = np.zeros(n)
+        for i in range(n):
+            density[i] = np.sum(distances[i] <= self.epsilon)
+
+        # 计算每个数据点的相对密度
+        relative_density = np.zeros(n)
+        for i in range(n):
+            relative_density[i] = np.sum(density > density[i])
+
+        # 计算每个数据点的密度峰值
+        density_peak = density * relative_density
+
+        # 筛选出密度峰值大于阈值的数据点作为聚类中心
+        center_indices = np.where(density_peak >= self.threshold)[0]
+
+        # 初始化聚类标签
+        self.labels = np.zeros(n, dtype=int)
+
+        # 分配数据点到聚类中心
+        cluster_id = 1
+        for center_index in center_indices:
+            if self.labels[center_index] == 0:
+                self.labels[center_index] = cluster_id
+
+            for i in range(n):
+                if distances[center_index][i] <= self.epsilon and self.labels[i] == 0:
+                    self.labels[i] = cluster_id
+
+            cluster_id += 1
+
+        return self.labels
+
+```
+
+1. 初始化：在`__init__`方法中，传入距离阈值epsilon、最小邻域数min_pts和密度峰值阈值threshold，并将聚类标签labels初始化为None。
+2. 计算距离矩阵：使用`scipy.spatial.distance`库中的`euclidean`函数计算数据点之间的欧氏距离，存储在distances矩阵中。
+3. 计算局部密度：遍历每个数据点，计算其在距离阈值epsilon内的邻域数，即与其距离小于等于epsilon的数据点数量，存储在density数组中。
+4. 计算相对密度：遍历每个数据点，计算其相对于其他数据点的密度高于等于自身的数据点数量，存储在relative_density数组中。
+5. 计算密度峰值：将局部密度和相对密度相乘，得到每个数据点的密度峰值，存储在density_peak数组中。
+6. 筛选聚类中心：根据密度峰值阈值threshold，筛选出密度峰值大于等于阈值的数据点作为聚类中心，存储在center_indices数组中。
+7. 分配聚类标签：遍历每个聚类中心，将其标记为当前聚类id，然后将距离其距离小于等于epsilon的未分配数据点也标记为当前聚类id，最后聚类id递增。
+8. 返回聚类结果：将聚类标签labels返回作为聚类结果。
+
 # 总结
 
 CFSFDP 聚类算法具有较快的计算速度和较好的聚类效果，在处理大规模数据集和带约束的聚类问题时具有优势。
