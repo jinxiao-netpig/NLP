@@ -41,8 +41,11 @@ class CFSFDP:
             raise Exception("不存在这种距离计算模式")
 
         # 根据 pattern 使用对应的函数
+        if distance_pattern == "euclidean_distance":
+            return self.compute_euclidean_distance(x, y)
 
-    def compute_euclidean_distance(self, x: np.ndarray[float], y: np.ndarray[float]) -> float:
+    @staticmethod
+    def compute_euclidean_distance(x: np.ndarray[float], y: np.ndarray[float]) -> float:
         """
         计算两个数据点之间的欧式距离
 
@@ -50,6 +53,10 @@ class CFSFDP:
         :param y: y 点的坐标
         :return: x 和 y 之间的欧氏距离
         """
+
+        distance = (np.sum(np.square(np.subtract(x, y)))) ** 0.5
+
+        return distance
 
     def build_distance_matrix(self):
         pass
