@@ -1,4 +1,8 @@
+from typing import TypeVar
+
 import numpy as np
+
+T = TypeVar('T')
 
 
 class CFSFDP:
@@ -6,9 +10,10 @@ class CFSFDP:
         "euclidean_distance",
     ]
 
-    def __init__(self, epsilon, threshold):
+    def __init__(self, epsilon: float, threshold: float, points: dict[T, np.ndarray]):
         self.epsilon = epsilon  # 距离阈值，用于确定某点的局部密度
         self.threshold = threshold  # 密度峰值阈值
+        self.points = points  # 所有数据点的坐标集合
         pass
 
     def fit(self):
@@ -23,7 +28,8 @@ class CFSFDP:
     def get_distance(self):
         pass
 
-    def compute_distance(self, x: np.ndarray[float], y: np.ndarray[float], distance_pattern: str = "euclidean_distance") -> float:
+    def compute_distance(self, x: np.ndarray[float], y: np.ndarray[float],
+                         distance_pattern: str = "euclidean_distance") -> float:
         """
         计算两个数据点之间的距离
 
@@ -58,8 +64,23 @@ class CFSFDP:
 
         return distance
 
-    def build_distance_matrix(self):
-        pass
+    def build_distance_list(self, point: T) -> list[tuple[T, float]]:
+        """
+        构建某个点的距离列表
+
+        :param point: 点名称。用于确定点的坐标
+        :return: 距离列表
+        """
+
+        res = []
+        point_loc = self.points[T]
+
+        for p, loc in self.points.items():
+            if p == point:
+                continue
+            res.append((p, self.compute_distance(self.points[point], loc)))
+
+        return res
 
     def build_density_peaks_list(self):
         pass
