@@ -73,12 +73,12 @@ class CFSFDP:
         """
 
         res = []
-        point_loc = self.points[T]
+        point_loc = self.points[point]
 
         for p, loc in self.points.items():
             if p == point:
                 continue
-            res.append((p, self.compute_distance(self.points[point], loc)))
+            res.append((p, self.compute_distance(point_loc, loc)))
 
         return res
 
