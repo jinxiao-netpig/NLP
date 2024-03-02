@@ -25,11 +25,8 @@ class CFSFDP:
     def build_relative_density_list(self):
         pass
 
-    def get_distance(self):
-        pass
-
-    def compute_distance(self, x: np.ndarray[float], y: np.ndarray[float],
-                         distance_pattern: str = "euclidean_distance") -> float:
+    def __get_distance(self, x: np.ndarray[float], y: np.ndarray[float],
+                       distance_pattern: str = "euclidean_distance") -> float:
         """
         计算两个数据点之间的距离
 
@@ -48,10 +45,10 @@ class CFSFDP:
 
         # 根据 pattern 使用对应的函数
         if distance_pattern == "euclidean_distance":
-            return self.compute_euclidean_distance(x, y)
+            return self.__get_euclidean_distance(x, y)
 
     @staticmethod
-    def compute_euclidean_distance(x: np.ndarray[float], y: np.ndarray[float]) -> float:
+    def __get_euclidean_distance(x: np.ndarray[float], y: np.ndarray[float]) -> float:
         """
         计算两个数据点之间的欧式距离
 
@@ -64,7 +61,7 @@ class CFSFDP:
 
         return distance
 
-    def build_distance_list(self, point: T) -> list[tuple[T, float]]:
+    def __build_distance_list(self, point: T) -> list[tuple[T, float]]:
         """
         构建某个点的距离列表
 
@@ -78,9 +75,40 @@ class CFSFDP:
         for p, loc in self.points.items():
             if p == point:
                 continue
-            res.append((p, self.compute_distance(point_loc, loc)))
+            res.append((p, self.__get_distance(point_loc, loc)))
 
         return res
+
+    def __get_point_local_density(self, distance_list: list[tuple[T, float]]) -> int:
+        """
+        根据某点的距离列表计算局部密度
+
+        :param distance_list: 某点的距离列表
+        :return: 局部密度
+        """
+
+        local_density = 0
+
+        for item in distance_list:
+            distance = item[1]
+
+            if distance <= self.epsilon:
+                local_density += 1
+
+        return local_density
+
+    def get_point_local_density(self, point: T) -> int:
+        """
+        计算 p 点的局部密度
+
+        :param point: p 点名称
+        :return: p 点的局部密度
+        """
+
+        distance_list = self.__build_distance_list(point)
+        local_density = self.__get_point_local_density(distance_list)
+
+        return local_density
 
     def build_density_peaks_list(self):
         pass
