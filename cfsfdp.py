@@ -9,6 +9,7 @@ class CFSFDP:
     pattern = [
         "euclidean_distance",
     ]
+    local_density_list = []
 
     def __init__(self, epsilon: float, threshold: float, points: dict[T, np.ndarray]):
         self.epsilon = epsilon  # 距离阈值，用于确定某点的局部密度
@@ -20,7 +21,15 @@ class CFSFDP:
         pass
 
     def build_local_density_list(self):
-        pass
+        """
+        构建数据点-局部密度列表
+
+        :return:
+        """
+
+        for key in self.points.keys():
+            p_ld = (key, self.get_point_local_density(key))
+            self.local_density_list.append(p_ld)
 
     def build_relative_density_list(self):
         pass
