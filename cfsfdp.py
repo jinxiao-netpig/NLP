@@ -9,11 +9,13 @@ class CFSFDP:
     pattern = [
         "euclidean_distance",
     ]
-    local_density_list = []
+    local_density_list = {}
+    relative_density_list = {}
+    density_peaks_list = {}
 
     def __init__(self, epsilon: float, threshold: float, points: dict[T, np.ndarray]):
-        self.epsilon = epsilon  # 距离阈值，用于确定某点的局部密度
-        self.threshold = threshold  # 密度峰值阈值
+        self.epsilon = epsilon  # 距离阈值。用于确定某点的局部密度
+        self.threshold = threshold  # 密度峰值阈值。用于确定聚类中心的个数
         self.points = points  # 所有数据点的坐标集合
         pass
 
@@ -28,11 +30,45 @@ class CFSFDP:
         """
 
         for key in self.points.keys():
-            p_ld = (key, self.get_point_local_density(key))
-            self.local_density_list.append(p_ld)
+            self.local_density_list[key] = self.get_point_local_density(key)
 
     def build_relative_density_list(self):
-        pass
+        """
+        构建数据点-相对密度列表
+
+        :return:
+        """
+
+        for key in self.points.keys():
+            self.relative_density_list[key] = self.get_point_relative_density(key)
+
+    def build_density_peaks_list(self):
+        """
+        构建数据点-密度峰值列表
+
+        :return:
+        """
+
+        for key in self.points.keys():
+            density_peak = self.local_density_list[key] * self.relative_density_list[key]
+            self.density_peaks_list[key] = density_peak
+
+    def get_point_relative_density(self, point: T) -> int:
+        """
+        计算 p 点的相对密度
+
+        :param point: p 点名称
+        :return: p 点的相对密度
+        """
+
+        relative_density = 0
+        point_ld = self.local_density_list[point]
+
+        for ld in self.local_density_list.values():
+            if ld >= point_ld:
+                relative_density += 1
+
+        return relative_density
 
     def __get_distance(self, x: np.ndarray[float], y: np.ndarray[float],
                        distance_pattern: str = "euclidean_distance") -> float:
@@ -82,8 +118,6 @@ class CFSFDP:
         point_loc = self.points[point]
 
         for p, loc in self.points.items():
-            if p == point:
-                continue
             res.append((p, self.__get_distance(point_loc, loc)))
 
         return res
@@ -118,6 +152,3 @@ class CFSFDP:
         local_density = self.__get_point_local_density(distance_list)
 
         return local_density
-
-    def build_density_peaks_list(self):
-        pass
