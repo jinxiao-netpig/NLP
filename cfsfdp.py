@@ -12,6 +12,7 @@ class CFSFDP:
     local_density_list = {}
     relative_density_list = {}
     density_peaks_list = {}
+    center_indices_list = {}
 
     def __init__(self, epsilon: float, threshold: float, points: dict[T, np.ndarray]):
         self.epsilon = epsilon  # 距离阈值。用于确定某点的局部密度
@@ -52,6 +53,9 @@ class CFSFDP:
         for key in self.points.keys():
             density_peak = self.local_density_list[key] * self.relative_density_list[key]
             self.density_peaks_list[key] = density_peak
+
+    def build_center_indices_list(self):
+        pass
 
     def get_point_relative_density(self, point: T) -> int:
         """
