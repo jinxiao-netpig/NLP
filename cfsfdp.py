@@ -9,10 +9,10 @@ class CFSFDP:
     pattern = [
         "euclidean_distance",
     ]
-    local_density_list = {}
-    relative_density_list = {}
-    density_peaks_list = {}
-    center_indices_list = {}
+    local_density_list = {}  # 数据点:局部密度
+    relative_density_list = {}  # 数据点:相对密度
+    density_peaks_list = {}  # 数据点:密度峰值
+    center_indices_list = {}  # 数据点:聚类中心id
 
     def __init__(self, epsilon: float, threshold: float, points: dict[T, np.ndarray]):
         self.epsilon = epsilon  # 距离阈值。用于确定某点的局部密度
@@ -25,7 +25,7 @@ class CFSFDP:
 
     def build_local_density_list(self):
         """
-        构建数据点-局部密度列表
+        构建 数据点-局部密度 列表
 
         :return:
         """
@@ -35,7 +35,7 @@ class CFSFDP:
 
     def build_relative_density_list(self):
         """
-        构建数据点-相对密度列表
+        构建 数据点-相对密度 列表
 
         :return:
         """
@@ -45,7 +45,7 @@ class CFSFDP:
 
     def build_density_peaks_list(self):
         """
-        构建数据点-密度峰值列表
+        构建 数据点-密度峰值 列表
 
         :return:
         """
@@ -55,7 +55,32 @@ class CFSFDP:
             self.density_peaks_list[key] = density_peak
 
     def build_center_indices_list(self):
-        pass
+        """
+        构建 数据点-聚类中心id 列表
+
+        :return:
+        """
+
+        cluster_id = 1  # id 值越大，密度峰值越小
+        peaks_list = []
+
+        # 获得聚类中心集合
+        for point, peak in self.density_peaks_list.items():
+            if peak >= self.threshold:
+                peaks_list.append((point, peak))
+
+        # 按照密度峰值大小，排序聚类中心集合
+
+        def sort_key(point_peak: tuple[T, float]):
+            return point_peak[1]
+
+        # 降序排序
+        peaks_list.sort(key=sort_key, reverse=True)
+
+        # 给聚类中心赋予 id 值
+        for item in peaks_list:
+            self.center_indices_list[item[0]] = cluster_id
+            cluster_id += 1
 
     def get_point_relative_density(self, point: T) -> int:
         """
