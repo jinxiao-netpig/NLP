@@ -21,7 +21,10 @@ class CFSFDP:
         pass
 
     def fit(self):
-        pass
+        self.build_local_density_list()  # 计算局部密度
+        self.build_relative_density_list()  # 计算相对密度
+        self.build_density_peaks_list()  # 计算密度峰值
+        self.build_center_indices_list()  # 分配聚类标签
 
     def build_local_density_list(self):
         """
