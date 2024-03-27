@@ -14,7 +14,6 @@ def train():
     epoch = 0
 
     # 迭代模型，调整参数
-    # todo: 有问题，这里每次都要创建新的实例，需要修改
     while center_indice_count > 4 and epoch < 2000:
         epoch += 1
         epsilon *= (1 + learn_rate)
@@ -26,6 +25,7 @@ def train():
         logging.info("center_indice_count: ", len(cfsfdp_instance.center_indices_list))
         logging.info("epoch: ", epoch)
         cfsfdp_instance.fit()
+        # todo: 学习率需要动态调整
         center_indice_count = len(cfsfdp_instance.center_indices_list)
 
     logging.info("epsilon: ", epsilon)
