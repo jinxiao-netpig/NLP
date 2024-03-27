@@ -19,7 +19,12 @@ def train():
         epoch += 1
         epsilon *= (1 + learn_rate)
         threshold *= (1 + learn_rate)
-        cfsfdp_instance = CFSFDP(epsilon=epsilon, threshold=threshold, points=points)
+        cfsfdp_instance.set_epsilon(epsilon=epsilon)
+        cfsfdp_instance.set_threshold(threshold=threshold)
+        logging.info("epsilon: ", cfsfdp_instance.epsilon)
+        logging.info("threshold: ", cfsfdp_instance.threshold)
+        logging.info("center_indice_count: ", len(cfsfdp_instance.center_indices_list))
+        logging.info("epoch: ", epoch)
         cfsfdp_instance.fit()
         center_indice_count = len(cfsfdp_instance.center_indices_list)
 

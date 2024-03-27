@@ -20,6 +20,12 @@ class CFSFDP:
         self.points = points  # 所有数据点的坐标集合
         pass
 
+    def set_epsilon(self, epsilon: float):
+        self.epsilon = epsilon
+
+    def set_threshold(self, threshold: float):
+        self.threshold = threshold
+
     def fit(self):
         self.build_local_density_list()  # 计算局部密度
         self.build_relative_density_list()  # 计算相对密度
