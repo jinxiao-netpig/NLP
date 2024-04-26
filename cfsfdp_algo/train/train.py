@@ -25,7 +25,7 @@ def train():
         logging.info("center_indice_count: ", len(cfsfdp_instance.center_indices_list))
         logging.info("epoch: ", epoch)
         cfsfdp_instance.fit()
-        # todo: 学习率需要动态调整
+        
         center_indice_count = len(cfsfdp_instance.center_indices_list)
 
     logging.info("epsilon: ", epsilon)
