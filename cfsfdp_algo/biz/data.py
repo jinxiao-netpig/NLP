@@ -25,7 +25,7 @@ def read_test_tsv() -> tuple[Union[ExtensionArray, np.ndarray], Union[ExtensionA
 
 
 def __read_test_tsv() -> pd.DataFrame:
-    df = pd.read_csv("../data/test.tsv", sep='\t', header=None)
+    df = pd.read_csv("./data/test.tsv", sep='\t', header=None)
     # print(df)
 
     return df
