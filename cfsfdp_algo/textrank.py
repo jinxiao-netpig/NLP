@@ -13,7 +13,7 @@ class TEXTRANK:
     top_keywords_per_document = []
     output_list = {}  # 原始关键词:预测关键词
 
-    def __init__(self, stopwords_file,
+    def __init__(self, stopwords_file: str,
                  inputs: tuple[Union[ExtensionArray, np.ndarray], Union[ExtensionArray, np.ndarray]]):
         self.stopwords_file = stopwords_file
         self.inputs = inputs
