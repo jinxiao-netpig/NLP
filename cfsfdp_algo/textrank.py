@@ -6,6 +6,8 @@ import numpy as np
 from pandas.core.arrays import ExtensionArray
 from textrank4zh import TextRank4Keyword
 
+from biz.data import read_test_tsv
+
 
 class TEXTRANK:
     stopwords = set()
@@ -52,8 +54,9 @@ class TEXTRANK:
         for keywords in enumerate(self.top_keywords_per_document):
             self.output_list[self.inputs[1].tolist()[keywords[0]]] = keywords[1]
 
-# if __name__ == '__main__':
-#     stopwords_file = r"D:\Program Files\GithubRepositorySet\NLP\cfsfdp_algo\data\stop_words\cn_stopwords.txt"
-#     textrank = TEXTRANK(stopwords_file=stopwords_file, inputs=read_test_tsv())
-#     textrank.keyword_extraction()
-#     print(textrank.output_list)
+
+if __name__ == '__main__':
+    stopwords_file = r"D:\Program Files\GithubRepositorySet\NLP\cfsfdp_algo\data\stop_words\cn_stopwords.txt"
+    textrank = TEXTRANK(stopwords_file=stopwords_file, inputs=read_test_tsv())
+    textrank.keyword_extraction()
+    print(textrank.output_list)
