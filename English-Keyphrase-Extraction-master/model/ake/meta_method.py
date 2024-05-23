@@ -5,8 +5,8 @@ from abc import abstractmethod
 class MetaMethod:
     output_list = {}  # 原始关键词:预测关键词    str:str
     stopwords = set()  # 停用词列表
-    documents = []
-    cost: int
+    documents = []  # 预处理后的文档列表
+    cost: int  # 提取关键词时间花费
 
     @abstractmethod
     def __init__(self):
