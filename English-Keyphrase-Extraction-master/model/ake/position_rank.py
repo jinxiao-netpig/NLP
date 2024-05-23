@@ -5,7 +5,7 @@ import kex
 from model.ake.meta_method import MetaMethod
 
 
-class SingleRank(MetaMethod):
+class PositionRank(MetaMethod):
     def __init__(self):
         pass
 
@@ -14,7 +14,7 @@ class SingleRank(MetaMethod):
         self.load_stopwords()
         self.filter_documents()
 
-        model = kex.SingleRank()
+        model = kex.PositionRank()
         # 测试集取前500条数据
         size = 500
         if size > len(kex.get_benchmark_dataset(dataset_name)):
@@ -40,6 +40,6 @@ class SingleRank(MetaMethod):
 
 
 if __name__ == '__main__':
-    single_rank_model = SingleRank()
-    single_rank_model.keyword_extraction("Inspec")
-    single_rank_model.show_output_list()
+    position_rank_model = PositionRank()
+    position_rank_model.keyword_extraction("Inspec")
+    position_rank_model.show_output_list()
