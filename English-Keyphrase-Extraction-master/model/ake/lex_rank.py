@@ -6,6 +6,9 @@ import kex
 from model.ake.meta_method import MetaMethod
 
 
+# 有问题，跑不起来，需要研究一下
+
+
 class LexRank(MetaMethod):
     def __init__(self):
         pass
