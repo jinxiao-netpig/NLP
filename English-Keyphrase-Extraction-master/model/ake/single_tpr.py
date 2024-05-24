@@ -22,14 +22,13 @@ class SingleTPR(MetaMethod):
             self.train_documents.append(text)
         logging.info("train_documents length: " + str(len(self.train_documents)))
 
-    def train_model(self):
+    def keyword_extraction(self, dataset_name: str):
+        super().keyword_extraction(dataset_name)
+
+        # 训练先验知识
         model = kex.SingleTPR()
         model.train(self.train_documents, export_directory='./tmp/single_tpr')
 
-    def keyword_extraction(self, dataset_name: str):
-        super().keyword_extraction(dataset_name)
-        
-        model = kex.SingleTPR()
         # 加载先验知识模型，提取关键词
         model.load('./tmp/single_tpr')
         time1 = time.time()
