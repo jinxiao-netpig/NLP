@@ -23,8 +23,7 @@ class SingleTPR(MetaMethod):
         logging.info("train_documents length: " + str(len(self.train_documents)))
 
     def keyword_extraction(self, dataset_name: str):
-        self.load_stopwords()
-        self.filter_documents(dataset_name)
+        super().keyword_extraction(dataset_name)
 
         # 训练先验知识
         model = kex.SingleTPR()

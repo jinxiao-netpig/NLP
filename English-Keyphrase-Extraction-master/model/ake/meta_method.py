@@ -23,6 +23,8 @@ class MetaMethod:
 
     @abstractmethod
     def keyword_extraction(self, dataset_name: str):
+        self.load_stopwords()
+        self.filter_documents(dataset_name)
         pass
 
     @abstractmethod

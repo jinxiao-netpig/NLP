@@ -10,9 +10,8 @@ class SingleRank(MetaMethod):
         pass
 
     def keyword_extraction(self, dataset_name: str):
+        super().keyword_extraction(dataset_name)
         time1 = time.time()
-        self.load_stopwords()
-        self.filter_documents(dataset_name)
 
         model = kex.SingleRank()
         # 测试集取前500条数据
