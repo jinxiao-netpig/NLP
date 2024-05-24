@@ -28,7 +28,10 @@ class MetaMethod:
         pass
 
     @abstractmethod
-    def computer_metric(self):
+    def compute_metric(self):
+        pass
+
+    def train_model(self, export_directory: str):
         pass
 
     @abstractmethod

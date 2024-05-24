@@ -49,7 +49,7 @@ class SingleTPR(MetaMethod):
         time2 = time.time()
         self.cost = int(time2 - time1)
 
-    def computer_metric(self):
+    def compute_metric(self):
         pass
 
     def download_data(self):
