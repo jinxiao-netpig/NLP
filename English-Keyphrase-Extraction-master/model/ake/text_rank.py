@@ -12,14 +12,16 @@ class TextRank(MetaMethod):
     def keyword_extraction(self, dataset_name: str):
         time1 = time.time()
         self.load_stopwords()
-        self.filter_documents()
+        self.filter_documents(dataset_name)
 
         model = kex.TextRank()
         # 测试集取前500条数据
         size = 500
-        if size > len(kex.get_benchmark_dataset(dataset_name)):
-            size = len(kex.get_benchmark_dataset(dataset_name))
-        json_line, _ = kex.get_benchmark_dataset(dataset_name)[:size]
+        json_line, _ = kex.get_benchmark_dataset(dataset_name)
+        if size > len(json_line):
+            size = len(json_line)
+
+        json_line = json_line[:size]
         for line in json_line:
             text = line['source']
             results = model.get_keywords(text, n_keywords=3)
