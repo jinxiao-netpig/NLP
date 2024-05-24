@@ -31,7 +31,8 @@ class MetaMethod:
     def compute_metric(self):
         pass
 
-    def train_model(self, export_directory: str):
+    def train_model(self):
+        # 目前模型参数的输出目录写死在函数体里
         pass
 
     @abstractmethod
