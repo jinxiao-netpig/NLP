@@ -23,7 +23,6 @@ class ToEmbedding:
         logging.info("MODEL: " + str(type(self)) + ", " + "OPERATION: " + "text_to_embedding")
         pass
 
-    @abstractmethod
     def load_model(self):
         pass
 
