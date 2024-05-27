@@ -7,6 +7,7 @@ import numpy as np
 class ToEmbedding:
     embedding: np.ndarray
 
+    @abstractmethod
     def __init__(self):
         pass
 
