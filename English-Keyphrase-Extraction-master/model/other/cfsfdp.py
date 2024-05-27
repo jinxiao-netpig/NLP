@@ -190,3 +190,24 @@ class CFSFDP:
         local_density = self.__get_point_local_density(distance_list)
 
         return local_density
+
+
+if __name__ == '__main__':
+    epsilon = 0.5
+    threshold = 5
+    points = {
+        "0": np.array([0, 0]),
+        "0.5": np.array([0.1, 0]),
+        "1": np.array([1, 0]),
+        "2": np.array([0, 10]),
+        "3": np.array([0, 1])
+    }
+
+    model = CFSFDP(epsilon=epsilon, threshold=threshold, points=points)
+    model.fit()
+
+    # 打印
+    print("local_density_list: {}".format(model.local_density_list))
+    print("relative_density_list: {}".format(model.relative_density_list))
+    print("density_peaks_list: {}".format(model.density_peaks_list))
+    print("center_indices_list: {}".format(model.center_indices_list))
