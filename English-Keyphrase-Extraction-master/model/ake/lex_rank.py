@@ -19,8 +19,8 @@ class LexRank(MetaMethod):
 
         json_line, _ = kex.get_benchmark_dataset(dataset_name)
         size = len(json_line)
-        test_size = int(size / 5)
-        json_line = json_line[test_size:]
+        test_size = size
+        json_line = json_line[:test_size]
         for line in json_line:
             text = line['source']
             self.train_documents.append(text)
