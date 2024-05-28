@@ -55,22 +55,42 @@ if __name__ == '__main__':
     # bert_model = BertToEmbedding()
     # bert_model.text_to_embedding(text=text)
     # print(bert_model.get_embedding())
-    text = " the man went to the store "
-    tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
-    model = BertModel.from_pretrained("bert-base-cased")
-    tokenized_text = tokenizer.tokenize(text)  # token初始化
-    indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)  # 获取词汇表索引
-    tokens_tensor = torch.tensor([indexed_tokens])  # 将输入转化为torch的tensor
-    with torch.no_grad():  # 禁用梯度计算 因为只是前向传播获取隐藏层状态，所以不需要计算梯度
-        last_hidden_states = model(tokens_tensor)[0]
-    token_embeddings = []
-    for token_i in range(len(tokenized_text)):
-        hidden_layers = []
-        for layer_i in range(len(last_hidden_states)):
-            vec = last_hidden_states[layer_i][0][token_i]  # 如果输入是单句不分块中间是0，因为只有一个维度，如果分块还要再遍历一次
-            hidden_layers.append(vec)
-        token_embeddings.append(hidden_layers)
+    # text = " the man went to the store "
+    # tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
+    # model = BertModel.from_pretrained("bert-base-cased")
+    # tokenized_text = tokenizer.tokenize(text)  # token初始化
+    # indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)  # 获取词汇表索引
+    # tokens_tensor = torch.tensor([indexed_tokens])  # 将输入转化为torch的tensor
+    # with torch.no_grad():  # 禁用梯度计算 因为只是前向传播获取隐藏层状态，所以不需要计算梯度
+    #     last_hidden_states = model(tokens_tensor)[0]
+    # token_embeddings = []
+    # for token_i in range(len(tokenized_text)):
+    #     hidden_layers = []
+    #     for layer_i in range(len(last_hidden_states)):
+    #         vec = last_hidden_states[layer_i][0][token_i]  # 如果输入是单句不分块中间是0，因为只有一个维度，如果分块还要再遍历一次
+    #         hidden_layers.append(vec)
+    #     token_embeddings.append(hidden_layers)
+    #
+    # sentence_embedding = torch.mean(last_hidden_states[11], 1).numpy()
+    # print(sentence_embedding)
 
-    sentence_embedding = torch.mean(last_hidden_states[11], 1).numpy()
-    print(sentence_embedding)
+    # 加载BERT模型和分词器
+    tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+    model = BertModel.from_pretrained('bert-base-cased')
 
+    # 定义要转换的英文文本
+    text = "This is a sample text to be converted into an embedding vector"
+
+    # 对文本进行分词和转换
+    input_ids = torch.tensor([tokenizer.encode(text, add_special_tokens=True)])
+    print("input_ids length: {}".format(len(input_ids)))
+
+    # 通过BERT模型获取最后一层隐藏状态作为embedding向量
+    with torch.no_grad():
+        outputs = model(input_ids)
+        embedding_vector = outputs[0][0]
+
+    print("embedding_vector: {}".format(embedding_vector))
+    print("embedding_vector type: {}".format(type(embedding_vector)))
+    print("embedding_vector length: {}".format(len(embedding_vector)))
+    print("embedding_vector[0] length: {}".format(len(embedding_vector[0])))
