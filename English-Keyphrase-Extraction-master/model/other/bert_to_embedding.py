@@ -1,4 +1,3 @@
-import nltk
 import torch
 from transformers import BertTokenizer, BertModel
 
@@ -33,8 +32,21 @@ class BertToEmbedding(ToEmbedding):
         with torch.no_grad():
             encoded_layers, _ = bert_model(tokens_tensor, segments_tensors)
 
+        token_embeddings = []
+        for token_i in range(len(tokenized_text)):
+            hidden_layers = []
+            for layer_i in range(len(encoded_layers)):
+                vec = encoded_layers[layer_i][0][token_i]
+                hidden_layers.append(vec)
+            token_embeddings.append(hidden_layers)
+
+        # 句子向量
+        sentence_embedding = torch.mean(encoded_layers[11], 1).numpy()
+        self.set_embedding(sentence_embedding)
+
 
 if __name__ == '__main__':
     text = "I want to eat a apple."
-    tokens = nltk.word_tokenize(text)
-    print(tokens)
+    bert_model = BertToEmbedding()
+    bert_model.text_to_embedding(text=text)
+    print(bert_model.get_embedding())
