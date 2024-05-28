@@ -49,9 +49,6 @@ class SingleTPR(MetaMethod):
         time2 = time.time()
         self.cost = int(time2 - time1)
 
-    def compute_metric(self):
-        pass
-
     def download_data(self):
         pass
 
@@ -59,4 +56,8 @@ class SingleTPR(MetaMethod):
 if __name__ == '__main__':
     single_tpr_rank_model = SingleTPR()
     single_tpr_rank_model.keyword_extraction("Inspec")
+    single_tpr_rank_model.compute_metric()
     single_tpr_rank_model.show_output_list()
+    print("single_tpr_rank_model.precision: {}".format(single_tpr_rank_model.precision))
+    print("single_tpr_rank_model.recall: {}".format(single_tpr_rank_model.recall))
+    print("single_tpr_rank_model.f_score: {}".format(single_tpr_rank_model.f_score))

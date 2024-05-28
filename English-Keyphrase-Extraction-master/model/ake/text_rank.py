@@ -33,9 +33,6 @@ class TextRank(MetaMethod):
         time2 = time.time()
         self.cost = int(time2 - time1)
 
-    def compute_metric(self):
-        pass
-
     def download_data(self):
         pass
 
@@ -43,4 +40,8 @@ class TextRank(MetaMethod):
 if __name__ == '__main__':
     text_rank_model = TextRank()
     text_rank_model.keyword_extraction("Inspec")
+    text_rank_model.compute_metric()
     text_rank_model.show_output_list()
+    print("text_rank_model.precision: {}".format(text_rank_model.precision))
+    print("text_rank_model.recall: {}".format(text_rank_model.recall))
+    print("text_rank_model.f_score: {}".format(text_rank_model.f_score))

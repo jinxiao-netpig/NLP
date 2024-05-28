@@ -43,12 +43,12 @@ class MetaMethod:
 
         tp_fn_sum = 0
         for oris, preds in self.output_list.items():
+            oris_list = oris.split(sep=";")
             for pred in preds:
-                if pred in oris:
+                if pred in oris_list:
                     self.tp += 1
                 else:
                     self.fp += 1
-            oris_list = oris.split(sep=";")
             tp_fn_sum += len(oris_list)
         self.fn = tp_fn_sum - self.tp
 
