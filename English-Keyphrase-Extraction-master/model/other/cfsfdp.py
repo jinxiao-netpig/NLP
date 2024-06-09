@@ -113,9 +113,14 @@ class CFSFDP:
             # 如果是自己就跳过
             if point_Y == point:
                 continue
-            # 如果自己就是局部密度最大的点，那么相对密度直接也给最大值
             if ld > point_ld:
                 relative_density = min(relative_density, self.__get_distance(self.points[point], self.points[point_Y]))
+        # 对于局部密度最大的点，它的相对密度为到其他所有点的最大距离
+        if relative_density == sys.float_info.max:
+            distances = self.__build_distance_list(point)
+            relative_density = 0
+            for item in distances:
+                relative_density = max(relative_density, item[1])
 
         return relative_density
 
@@ -242,8 +247,8 @@ class CFSFDP:
 
 
 if __name__ == '__main__':
-    epsilon = 0.5
-    threshold = 4
+    epsilon = 1
+    threshold = 17.029386365926403
     points = {
         "a": np.array([0, 0]),
         "b": np.array([0.1, 0]),
