@@ -1,6 +1,12 @@
+import sys
 from typing import TypeVar
 
+import matplotlib.pyplot as plt
 import numpy as np
+
+# 2014年的文章，Science
+# 将其应用在 NLP 是2016年的文章
+# 我这边改进是变成监督式，密度峰值阈值才去乘法
 
 T = TypeVar('T')
 
@@ -8,9 +14,10 @@ T = TypeVar('T')
 class CFSFDP:
     pattern = [
         "euclidean_distance",
+        "cosine_similarity"
     ]
-    local_density_list = {}  # 数据点:局部密度
-    relative_density_list = {}  # 数据点:相对密度
+    local_density_list: dict[T, int] = {}  # 数据点:局部密度
+    relative_density_list = {}  # 数据点:相对密度（最小距离）
     density_peaks_list = {}  # 数据点:密度峰值
     center_indices_list = {}  # 数据点:聚类中心id
 
@@ -91,7 +98,7 @@ class CFSFDP:
             self.center_indices_list[item[0]] = cluster_id
             cluster_id += 1
 
-    def get_point_relative_density(self, point: T) -> int:
+    def get_point_relative_density(self, point: T) -> float:
         """
         计算 p 点的相对密度
 
@@ -99,12 +106,16 @@ class CFSFDP:
         :return: p 点的相对密度
         """
 
-        relative_density = 0
+        relative_density = sys.float_info.max
         point_ld = self.local_density_list[point]
 
-        for ld in self.local_density_list.values():
-            if ld >= point_ld:
-                relative_density += 1
+        for point_Y, ld in self.local_density_list.items():
+            # 如果是自己就跳过
+            if point_Y == point:
+                continue
+            # 如果自己就是局部密度最大的点，那么相对密度直接也给最大值
+            if ld > point_ld:
+                relative_density = min(relative_density, self.__get_distance(self.points[point], self.points[point_Y]))
 
         return relative_density
 
@@ -129,6 +140,17 @@ class CFSFDP:
         # 根据 pattern 使用对应的函数
         if distance_pattern == "euclidean_distance":
             return self.__get_euclidean_distance(x, y)
+
+    @staticmethod
+    def __get_cosine_similarity_distance(x: np.ndarray[float], y: np.ndarray[float]) -> float:
+        """
+        计算两个数据点之间的余弦相似度
+
+        :param x: x 点的坐标
+        :param y: y 点的坐标
+        :return: x 和 y 之间的余弦相似度
+        """
+        pass
 
     @staticmethod
     def __get_euclidean_distance(x: np.ndarray[float], y: np.ndarray[float]) -> float:
@@ -176,7 +198,7 @@ class CFSFDP:
             if distance <= self.epsilon:
                 local_density += 1
 
-        return local_density
+        return local_density - 1
 
     def get_point_local_density(self, point: T) -> int:
         """
@@ -191,16 +213,61 @@ class CFSFDP:
 
         return local_density
 
+    def points_dict_to_slice(self) -> list[tuple]:
+        """
+        将 points 这个字典转成坐标的列表
+
+        :return: 坐标的列表
+        """
+
+        res = []
+        for value in self.points.values():
+            res.append(tuple(value.tolist()))
+
+        return res
+
+    def centers_dict_to_slice(self) -> list[tuple]:
+        """
+        将 center_indices_list 这个字典转成坐标的列表
+
+        :return: 坐标的列表
+        """
+
+        res = []
+        centers = self.center_indices_list.keys()
+        for center_point in centers:
+            res.append(tuple(self.points[center_point].tolist()))
+
+        return res
+
 
 if __name__ == '__main__':
     epsilon = 0.5
-    threshold = 5
+    threshold = 4
     points = {
-        "0": np.array([0, 0]),
-        "0.5": np.array([0.1, 0]),
-        "1": np.array([1, 0]),
-        "2": np.array([0, 10]),
-        "3": np.array([0, 1])
+        "a": np.array([0, 0]),
+        "b": np.array([0.1, 0]),
+        "c": np.array([1, 0]),
+        "d": np.array([0, 10]),
+        "e": np.array([0, 4]),
+        "f": np.array([1, 17]),
+        "g": np.array([2.4, 1]),
+        "h": np.array([0.7, 5]),
+        "i": np.array([6, 5]),
+        "j": np.array([10, 1]),
+        "k": np.array([3, 1.3]),
+        "l": np.array([7, 7.1]),
+        "m": np.array([6, 7.1]),
+        "n": np.array([5, 7.1]),
+        "o": np.array([8, 7]),
+        "p": np.array([3, 3.5]),
+        "q": np.array([3.8, 7.1]),
+        "r": np.array([3.5, 3]),
+        "s": np.array([4, 7.1]),
+        "t": np.array([6, 6]),
+        "u": np.array([5, 5]),
+        "v": np.array([8, 9]),
+        "w": np.array([5.2, 2.5]),
     }
 
     model = CFSFDP(epsilon=epsilon, threshold=threshold, points=points)
@@ -211,3 +278,17 @@ if __name__ == '__main__':
     print("relative_density_list: {}".format(model.relative_density_list))
     print("density_peaks_list: {}".format(model.density_peaks_list))
     print("center_indices_list: {}".format(model.center_indices_list))
+
+    # 画图
+    plt.figure()
+    data_points = model.points_dict_to_slice()
+    x_coords, y_coords = zip(*data_points)
+    plt.scatter(x_coords, y_coords, color="blue", marker="o")
+    # 画出聚类中心
+    center_points = model.centers_dict_to_slice()
+    x, y = zip(*center_points)
+    plt.scatter(x, y, color="red", marker="o")
+    plt.title("CFSFDP Clustering Result")
+    plt.xlabel("X Axis")
+    plt.ylabel("Y Axis")
+    plt.show()
