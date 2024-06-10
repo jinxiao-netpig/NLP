@@ -19,13 +19,16 @@ class CFSFDP:
     local_density_list: dict[T, int] = {}  # 数据点:局部密度
     relative_density_list = {}  # 数据点:相对密度（最小距离）
     density_peaks_list = {}  # 数据点:密度峰值
-    center_indices_list = {}  # 数据点:聚类中心id
+    center_indices_list: dict[T, int] = {}  # 数据点:聚类中心id
 
     def __init__(self, epsilon: float, threshold: float, points: dict[T, np.ndarray]):
         self.epsilon = epsilon  # 距离阈值。用于确定某点的局部密度
         self.threshold = threshold  # 密度峰值阈值。用于确定聚类中心的个数
         self.points = points  # 所有数据点的坐标集合
         pass
+
+    def set_points(self, points: dict[T, np.ndarray]):
+        self.points = points
 
     def set_epsilon(self, epsilon: float):
         self.epsilon = epsilon

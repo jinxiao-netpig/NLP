@@ -31,7 +31,7 @@ if __name__ == '__main__':
     sid = SentimentIntensityAnalyzer()
 
     # 示例文本
-    text = "I love this movie! It's amazing and full of surprises :)"
+    text = "I am so bad"
 
     # 进行情感分析
     sentiment_scores = sid.polarity_scores(text)
