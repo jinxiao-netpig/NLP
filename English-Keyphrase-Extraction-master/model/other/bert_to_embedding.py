@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from transformers import BertTokenizer, BertModel
 
@@ -12,42 +13,57 @@ class BertToEmbedding(ToEmbedding):
     def __init__(self):
         self.model_name = "bert-base-cased"
 
-    def text_to_embedding(self, text: str):
+    def text_to_embedding(self, text: str) -> np.ndarray:
         super().text_to_embedding(text=text)
 
         # 加载BERT模型和BERT分词器
-        bert_tokenizer = BertTokenizer.from_pretrained(self.model_name)
-        bert_model = BertModel.from_pretrained(self.model_name)
+        tokenizer = BertTokenizer.from_pretrained(self.model_name)
+        model = BertModel.from_pretrained(self.model_name)
 
-        marked_text = "[CLS] " + text + " [SEP]"
-        tokenized_text = bert_tokenizer.tokenize(marked_text)
-        indexed_tokens = bert_tokenizer.convert_tokens_to_ids(tokenized_text)
-        segments_ids = [1] * len(tokenized_text)
-        tokens_tensor = torch.tensor([indexed_tokens])
-        segments_tensors = torch.tensor([segments_ids])
+        # marked_text = "[CLS] " + text + " [SEP]"
+        # tokenized_text = bert_tokenizer.tokenize(marked_text)
+        # indexed_tokens = bert_tokenizer.convert_tokens_to_ids(tokenized_text)
+        # segments_ids = [1] * len(tokenized_text)
+        # tokens_tensor = torch.tensor([indexed_tokens])
+        # segments_tensors = torch.tensor([segments_ids])
+        #
+        # # 将模型置于评估模式，而不是训练模式。在这种情况下，评估模式关闭了训练中使用的dropout正则化。
+        # bert_model.eval()
+        # # 禁用梯度计算，节省内存，并加快计算速度
+        # with torch.no_grad():
+        #     encoded_layers, _ = bert_model(tokens_tensor, segments_tensors)
+        #
+        # token_embeddings = []
+        # for token_i in range(len(tokenized_text)):
+        #     print("token_i: {}".format(token_i))
+        #     print("len(tokenized_text): {}".format(len(tokenized_text)))
+        #     hidden_layers = []
+        #     for layer_i in range(len(encoded_layers)):
+        #         print("layer_i: {}".format(layer_i))
+        #         print("len(encoded_layers[layer_i]): {}".format(len(encoded_layers[layer_i])))
+        #         print("len(encoded_layers[layer_i][0]): {}".format(len(encoded_layers[layer_i][0])))
+        #         vec = encoded_layers[layer_i][0][token_i]
+        #         hidden_layers.append(vec)
+        #     token_embeddings.append(hidden_layers)
+        #
+        # # 句子向量
+        # sentence_embedding = torch.mean(encoded_layers[11], 1).numpy()
+        # self.set_embedding(sentence_embedding)
 
-        # 将模型置于评估模式，而不是训练模式。在这种情况下，评估模式关闭了训练中使用的dropout正则化。
-        bert_model.eval()
-        # 禁用梯度计算，节省内存，并加快计算速度
+        # 定义要转换的英文文本
+        text = "This is a sample text to be converted into an embedding vector"
+
+        # 对文本进行分词和转换
+        input_ids = torch.tensor([tokenizer.encode(text, add_special_tokens=True)])
+
+        # 通过BERT模型获取最后一层隐藏状态作为embedding向量
         with torch.no_grad():
-            encoded_layers, _ = bert_model(tokens_tensor, segments_tensors)
+            outputs = model(input_ids)
+            embedding_vector = outputs[0][0]
 
-        token_embeddings = []
-        for token_i in range(len(tokenized_text)):
-            print("token_i: {}".format(token_i))
-            print("len(tokenized_text): {}".format(len(tokenized_text)))
-            hidden_layers = []
-            for layer_i in range(len(encoded_layers)):
-                print("layer_i: {}".format(layer_i))
-                print("len(encoded_layers[layer_i]): {}".format(len(encoded_layers[layer_i])))
-                print("len(encoded_layers[layer_i][0]): {}".format(len(encoded_layers[layer_i][0])))
-                vec = encoded_layers[layer_i][0][token_i]
-                hidden_layers.append(vec)
-            token_embeddings.append(hidden_layers)
+        # self.set_embedding(embedding_vector[0].numpy())
 
-        # 句子向量
-        sentence_embedding = torch.mean(encoded_layers[11], 1).numpy()
-        self.set_embedding(sentence_embedding)
+        return embedding_vector[0].numpy()
 
 
 if __name__ == '__main__':
@@ -94,3 +110,4 @@ if __name__ == '__main__':
     print("embedding_vector type: {}".format(type(embedding_vector)))
     print("embedding_vector length: {}".format(len(embedding_vector)))
     print("embedding_vector[0] length: {}".format(len(embedding_vector[0])))
+    print("embedding_vector[0] type: {}".format(type(embedding_vector[0])))
