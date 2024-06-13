@@ -44,3 +44,7 @@ if __name__ == '__main__':
     position_rank_model = PositionRank()
     position_rank_model.keyword_extraction("Inspec")
     position_rank_model.show_output_list()
+    position_rank_model.compute_metric()
+    print("single_tpr_rank_model.precision: {}".format(position_rank_model.precision))
+    print("single_tpr_rank_model.recall: {}".format(position_rank_model.recall))
+    print("single_tpr_rank_model.f_score: {}".format(position_rank_model.f_score))

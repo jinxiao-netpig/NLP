@@ -63,3 +63,6 @@ if __name__ == '__main__':
     lex_spec_model = LexSpec()
     lex_spec_model.keyword_extraction("Inspec")
     lex_spec_model.show_output_list()
+    print("single_tpr_rank_model.precision: {}".format(single_tpr_rank_model.precision))
+    print("single_tpr_rank_model.recall: {}".format(single_tpr_rank_model.recall))
+    print("single_tpr_rank_model.f_score: {}".format(single_tpr_rank_model.f_score))
