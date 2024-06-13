@@ -18,10 +18,10 @@ T = TypeVar('T')
 
 class BERTCFSFDP(MetaMethod):
     def __init__(self, epsilon: float, threshold: float):
-        self.epsilon = epsilon
-        self.threshold = threshold
-        self.points = {}
-        self.cfsfdp = CFSFDP(epsilon=epsilon, threshold=threshold, points={})  # 聚类
+        self.epsilon = epsilon  # 截断距离
+        self.threshold = threshold  # 密度峰值阈值
+        self.points = {}  # 数据点名称:数据点坐标
+        self.cfsfdp = CFSFDP(epsilon=epsilon, threshold=threshold, points={})  # cfsfdp聚类器
         self.bert_model = BertToEmbedding()  # bert编码器
         self.sen_to_words = spacy.load('en_core_web_sm')  # 分词器
         self.lemmatizer = WordNetLemmatizer()  # 词干还原器
@@ -74,6 +74,7 @@ class BERTCFSFDP(MetaMethod):
             words_set_lower = [word.lower() for word in words_set if word.isalpha()]
             stopword_set = set(stopwords.words('english'))
             words_set_with_stopword = [word for word in words_set_lower if word not in stopword_set]
+            # todo：词性标注的标签词干还原用不了，得再想想办法
             word_pos_set = pos_tag(words_set_with_stopword)  # 词性标注
             word_stems = []
             for word_pos in word_pos_set:
