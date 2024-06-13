@@ -52,9 +52,6 @@ class LexRank(MetaMethod):
         time2 = time.time()
         self.cost = int(time2 - time1)
 
-    def compute_metric(self):
-        pass
-
     def download_data(self):
         pass
 
@@ -62,7 +59,8 @@ class LexRank(MetaMethod):
 if __name__ == '__main__':
     lex_rank_model = LexRank()
     lex_rank_model.keyword_extraction("Inspec")
+    lex_rank_model.compute_metric()
     lex_rank_model.show_output_list()
-    print("single_tpr_rank_model.precision: {}".format(single_tpr_rank_model.precision))
-    print("single_tpr_rank_model.recall: {}".format(single_tpr_rank_model.recall))
-    print("single_tpr_rank_model.f_score: {}".format(single_tpr_rank_model.f_score))
+    print("single_tpr_rank_model.precision: {}".format(lex_rank_model.precision))
+    print("single_tpr_rank_model.recall: {}".format(lex_rank_model.recall))
+    print("single_tpr_rank_model.f_score: {}".format(lex_rank_model.f_score))

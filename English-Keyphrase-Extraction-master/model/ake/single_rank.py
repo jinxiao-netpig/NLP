@@ -33,9 +33,6 @@ class SingleRank(MetaMethod):
         time2 = time.time()
         self.cost = int(time2 - time1)
 
-    def compute_metric(self):
-        pass
-
     def download_data(self):
         pass
 
