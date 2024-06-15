@@ -1,3 +1,4 @@
+import logging
 import time
 from typing import TypeVar
 
@@ -5,7 +6,7 @@ import kex
 import nltk
 import numpy as np
 import spacy
-from nltk import pos_tag, WordNetLemmatizer
+from nltk import WordNetLemmatizer
 from nltk.corpus import stopwords
 
 from model.ake.meta_method import MetaMethod
@@ -60,7 +61,23 @@ class BERTCFSFDP(MetaMethod):
         :return: 关键词列表
         """
 
-        keywords = []
+        # 文本预处理，并存入 self.points
+        self.preprocess_text(text=text)
+
+        # 对词向量进行聚类
+        self.cfsfdp.set_points(self.points)
+        self.cfsfdp.fit()
+        centers = self.cfsfdp.center_indices_list
+        centers_list = [""] * len(centers)
+        for key, value in centers.items():
+            centers_list[value - 1] = key
+
+        if n_keywords > len(centers_list):
+            n_keywords = len(centers_list)
+
+        return centers_list[:n_keywords]
+
+    def preprocess_text(self, text: str):
         word_to_embedding: dict[str, np.ndarray] = {}
 
         # 划分句子
@@ -74,12 +91,12 @@ class BERTCFSFDP(MetaMethod):
             words_set_lower = [word.lower() for word in words_set if word.isalpha()]
             stopword_set = set(stopwords.words('english'))
             words_set_with_stopword = [word for word in words_set_lower if word not in stopword_set]
-            # todo：词性标注的标签词干还原用不了，得再想想办法
-            word_pos_set = pos_tag(words_set_with_stopword)  # 词性标注
+            # 词干还原
             word_stems = []
-            for word_pos in word_pos_set:
-                word_stem = str(self.lemmatizer.lemmatize(word=word_pos[0], pos=word_pos[1]))
-                word_stems.append(word_stem)
+            for word in words_set_with_stopword:
+                doc = self.sen_to_words(word)
+                lemmatized_word = doc[0].lemma_
+                word_stems.append(lemmatized_word)
 
             # 将句子拆成词组
             phrases = []
@@ -98,24 +115,46 @@ class BERTCFSFDP(MetaMethod):
                 word_sen_sense_embedding = np.concatenate((word_embedding, sentence_embedding, sense_embedding))
                 word_to_embedding[word] = word_sen_sense_embedding
 
-        # 对词向量进行聚类
-        self.cfsfdp.set_points(word_to_embedding)
-        self.cfsfdp.fit()
-        centers = self.cfsfdp.center_indices_list
-        centers_list = [""] * len(centers)
-        for key, value in centers.items():
-            centers_list[value - 1] = key
+        self.points = word_to_embedding
 
-        if n_keywords > len(centers_list):
-            n_keywords = len(centers_list)
+    def train_model(self, learning_rate: float):
+        epoch = 0
+        # 加载数据
+        self.cfsfdp.set_points(points=self.points)
+        while epoch < 500:
+            epoch += 1
+            # 训练前打印参数信息
+            logging.info("start epoch: {}".format(epoch))
+            logging.info("epsilon: {}".format(self.epsilon))
+            logging.info("threshold: {}".format(self.threshold))
+            self.cfsfdp.set_epsilon(self.epsilon)
+            self.cfsfdp.set_threshold(self.threshold)
+            # 开始计算聚类中心
+            self.cfsfdp.fit()
 
-        return centers_list[:n_keywords]
+            centers_num = len(self.cfsfdp.center_indices_list)
+            loss = centers_num - 6
+            logging.info("centers_num: {}".format(centers_num))
+            logging.info("loss: {}".format(loss))
+            # 损失提前收敛就直接退出循环
+            if 0 <= loss <= 2:
+                break
 
-    def train_model(self):
-        pass
+            # 更新 threshold 参数，值越大，聚类数量越少
+            self.threshold = self.threshold + loss * learning_rate
+            logging.info("-------------------------------------------------------------")
 
 
 if __name__ == '__main__':
-    bert_cfsfdp_model = BERTCFSFDP(epsilon=1, threshold=3)
-    bert_cfsfdp_model.keyword_extraction("Inspec")
-    bert_cfsfdp_model.show_output_list()
+    # bert_cfsfdp_model = BERTCFSFDP(epsilon=1, threshold=3)
+    # bert_cfsfdp_model.keyword_extraction("Inspec")
+    # bert_cfsfdp_model.show_output_list()
+
+    nlp = spacy.load('en_core_web_sm')
+    test_word_list = ["men", "computers", "ate", "running", "fancier"]
+    lemmatized_list = []
+    for word in test_word_list:
+        doc = nlp(word)
+        lemmatized_word = doc[0].lemma_
+        lemmatized_list.append(lemmatized_word)
+    print("lemmatized_list: {}".format(lemmatized_list))

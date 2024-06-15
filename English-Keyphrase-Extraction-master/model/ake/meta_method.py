@@ -56,7 +56,7 @@ class MetaMethod:
         self.recall = self.tp / (self.tp + self.fn)
         self.f_score = 2 * self.precision * self.recall / (self.recall + self.precision)
 
-    def train_model(self):
+    def train_model(self, learn_rate: float):
         # 目前训练出来的模型参数写死在函数体
         pass
 
