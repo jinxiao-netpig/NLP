@@ -128,7 +128,7 @@ class CFSFDP:
         return relative_density
 
     def __get_distance(self, x: np.ndarray[float], y: np.ndarray[float],
-                       distance_pattern: str = "euclidean_distance") -> float:
+                       distance_pattern: str = "cosine_similarity") -> float:
         """
         计算两个数据点之间的距离
 
@@ -148,6 +148,8 @@ class CFSFDP:
         # 根据 pattern 使用对应的函数
         if distance_pattern == "euclidean_distance":
             return self.__get_euclidean_distance(x, y)
+        elif distance_pattern == "cosine_similarity":
+            return self.__get_cosine_similarity_distance(x, y)
 
     @staticmethod
     def __get_cosine_similarity_distance(x: np.ndarray[float], y: np.ndarray[float]) -> float:
@@ -158,7 +160,16 @@ class CFSFDP:
         :param y: y 点的坐标
         :return: x 和 y 之间的余弦相似度
         """
-        pass
+
+        # 计算点积
+        dot_product = np.dot(x, y)
+        # 计算范数（即向量长度）
+        norm_x = np.linalg.norm(x)
+        norm_y = np.linalg.norm(y)
+        # 计算余弦相似度
+        cosine_sim = dot_product / (norm_x * norm_y)
+
+        return cosine_sim
 
     @staticmethod
     def __get_euclidean_distance(x: np.ndarray[float], y: np.ndarray[float]) -> float:
@@ -170,7 +181,7 @@ class CFSFDP:
         :return: x 和 y 之间的欧氏距离
         """
 
-        distance = (np.sum(np.square(np.subtract(x, y)))) ** 0.5
+        distance = np.sqrt(np.sum(np.square(np.subtract(x, y))))
 
         return distance
 

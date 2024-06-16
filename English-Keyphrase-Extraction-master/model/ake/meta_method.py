@@ -57,7 +57,8 @@ class MetaMethod:
         self.f_score = 2 * self.precision * self.recall / (self.recall + self.precision)
 
     def train_model(self, learn_rate: float):
-        # 目前训练出来的模型参数写死在函数体
+        logging.info("MODEL: " + str(type(self)) + ", " + "OPERATION: " + "train_model")
+        logging.info("learn_rate: {}".format(learn_rate))
         pass
 
     @abstractmethod

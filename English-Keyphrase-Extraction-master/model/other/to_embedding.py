@@ -21,6 +21,7 @@ class ToEmbedding:
         """
 
         logging.info("MODEL: " + str(type(self)) + ", " + "OPERATION: " + "text_to_embedding")
+        logging.info("text: {}".format(text))
         pass
 
     def load_model(self):

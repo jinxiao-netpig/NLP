@@ -6,6 +6,7 @@ import kex
 import nltk
 import numpy as np
 import spacy
+import yaml
 from nltk import WordNetLemmatizer
 from nltk.corpus import stopwords
 
@@ -117,44 +118,75 @@ class BERTCFSFDP(MetaMethod):
 
         self.points = word_to_embedding
 
+    def filter_documents(self, dataset_name: str):
+        super().filter_documents(dataset_name)
+
+        json_line, _ = kex.get_benchmark_dataset(dataset_name)
+        size = len(json_line)
+        test_size = int(size / 5)
+        json_line = json_line[test_size:]
+        for line in json_line:
+            text = line['source']
+            self.train_documents.append(text)
+        logging.info("train_documents length: " + str(len(self.train_documents)))
+
+    def load_config(self):
+        pass
+
+    def dump_config(self):
+        logging.info("dump_config -> model/ake/tmp/bert_cfsfdp_config/config.yaml")
+        try:
+            with open('../configs/config.yaml', 'w', encoding='utf8') as file:
+                write_data = {}
+                write_data['cfsfdp']['epsilon'] = self.epsilon
+                write_data['cfsfdp']['threshold'] = self.threshold
+                yaml.dump(write_data, file)
+        except Exception as e:
+            logging.error("write error: ", e)
+
     def train_model(self, learning_rate: float):
+        super().train_model(learn_rate=learning_rate)
         epoch = 0
-        # 加载数据
-        self.cfsfdp.set_points(points=self.points)
+
         while epoch < 500:
             epoch += 1
             # 训练前打印参数信息
             logging.info("start epoch: {}".format(epoch))
-            logging.info("epsilon: {}".format(self.epsilon))
-            logging.info("threshold: {}".format(self.threshold))
-            self.cfsfdp.set_epsilon(self.epsilon)
-            self.cfsfdp.set_threshold(self.threshold)
-            # 开始计算聚类中心
-            self.cfsfdp.fit()
 
-            centers_num = len(self.cfsfdp.center_indices_list)
-            loss = centers_num - 6
-            logging.info("centers_num: {}".format(centers_num))
-            logging.info("loss: {}".format(loss))
-            # 损失提前收敛就直接退出循环
-            if 0 <= loss <= 2:
-                break
+            # 一次epoch的训练
+            for text in self.train_documents:
+                self.preprocess_text(text)
+                self.cfsfdp.set_points(points=self.points)
+                logging.info("epsilon: {}".format(self.epsilon))
+                logging.info("threshold: {}".format(self.threshold))
+                self.cfsfdp.set_epsilon(self.epsilon)
+                self.cfsfdp.set_threshold(self.threshold)
+                # 开始计算聚类中心
+                self.cfsfdp.fit()
 
-            # 更新 threshold 参数，值越大，聚类数量越少
-            self.threshold = self.threshold + loss * learning_rate
+                centers_num = len(self.cfsfdp.center_indices_list)
+                loss = centers_num - 6
+                logging.info("centers_num: {}".format(centers_num))
+                logging.info("loss: {}".format(loss))
+                # 损失提前收敛就直接退出循环
+                if 0 <= loss <= 2:
+                    break
+
+                # 更新 threshold 参数，值越大，聚类数量越少
+                self.threshold = self.threshold + loss * learning_rate
             logging.info("-------------------------------------------------------------")
+
+        # dump配置
+        self.dump_config()
 
 
 if __name__ == '__main__':
-    # bert_cfsfdp_model = BERTCFSFDP(epsilon=1, threshold=3)
+    # bert_cfsfdp_model = BERTCFSFDP(epsilon=0.5, threshold=3)
     # bert_cfsfdp_model.keyword_extraction("Inspec")
     # bert_cfsfdp_model.show_output_list()
 
-    nlp = spacy.load('en_core_web_sm')
-    test_word_list = ["men", "computers", "ate", "running", "fancier"]
-    lemmatized_list = []
-    for word in test_word_list:
-        doc = nlp(word)
-        lemmatized_word = doc[0].lemma_
-        lemmatized_list.append(lemmatized_word)
-    print("lemmatized_list: {}".format(lemmatized_list))
+    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.5, threshold=0.5)
+    bert_cfsfdp_model.filter_documents("Inspec")
+    bert_cfsfdp_model.train_model(learning_rate=0.03)
+    print("epsilon: {}".format(bert_cfsfdp_model.epsilon))
+    print("threshold: {}".format(bert_cfsfdp_model.threshold))

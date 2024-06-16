@@ -1,0 +1,4 @@
+cfsfdp:
+  epsilon: 0.5
+  threshold: 3
+  learn_rate: 0
