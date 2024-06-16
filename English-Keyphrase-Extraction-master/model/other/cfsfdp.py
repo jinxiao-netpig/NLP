@@ -117,7 +117,8 @@ class CFSFDP:
             if point_Y == point:
                 continue
             if ld > point_ld:
-                relative_density = min(relative_density, self.__get_distance(self.points[point], self.points[point_Y]))
+                relative_density = min(relative_density, self.__get_distance(self.points[point], self.points[point_Y],
+                                                                             distance_pattern="euclidean_distance"))
         # 对于局部密度最大的点，它的相对密度为到其他所有点的最大距离
         if relative_density == sys.float_info.max:
             distances = self.__build_distance_list(point)
@@ -214,10 +215,10 @@ class CFSFDP:
         for item in distance_list:
             distance = item[1]
 
-            if distance <= self.epsilon:
+            if distance > self.epsilon:
                 local_density += 1
 
-        return local_density - 1
+        return local_density
 
     def get_point_local_density(self, point: T) -> int:
         """

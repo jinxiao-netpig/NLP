@@ -1,4 +1,3 @@
-import logging
 from abc import abstractmethod
 
 import numpy as np
@@ -20,8 +19,8 @@ class ToEmbedding:
         :return:
         """
 
-        logging.info("MODEL: " + str(type(self)) + ", " + "OPERATION: " + "text_to_embedding")
-        logging.info("text: {}".format(text))
+        # logging.info("MODEL: " + str(type(self)) + ", " + "OPERATION: " + "text_to_embedding")
+        # logging.info("text: {}".format(text))
         pass
 
     def load_model(self):

@@ -115,8 +115,10 @@ class BERTCFSFDP(MetaMethod):
             for word in words_phrases_set:
                 word_embedding = self.bert_model.text_to_embedding(word)
                 sense_embedding = self.sence_encoder.text_to_embedding(word)
-                # 词向量+句子向量+情感向量
-                word_sen_sense_embedding = np.concatenate((word_embedding, sentence_embedding, sense_embedding))
+                # # 词向量+句子向量+情感向量
+                # word_sen_sense_embedding = np.concatenate((word_embedding, sentence_embedding, sense_embedding))
+                # 词向量+情感向量
+                word_sen_sense_embedding = np.concatenate((word_embedding, sense_embedding))
                 word_to_embedding[word] = word_sen_sense_embedding
 
         self.points = word_to_embedding
@@ -151,7 +153,7 @@ class BERTCFSFDP(MetaMethod):
         super().train_model(learn_rate=learning_rate)
         epoch = 0
 
-        while epoch < 500:
+        while epoch < 100:
             epoch += 1
             # 训练前打印参数信息
             logging.info("start epoch: {}".format(epoch))
@@ -188,8 +190,8 @@ if __name__ == '__main__':
     # bert_cfsfdp_model.keyword_extraction("Inspec")
     # bert_cfsfdp_model.show_output_list()
 
-    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.5, threshold=0.5)
+    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=1)
     bert_cfsfdp_model.filter_documents("Inspec")
-    bert_cfsfdp_model.train_model(learning_rate=0.03)
+    bert_cfsfdp_model.train_model(learning_rate=0.3)
     print("epsilon: {}".format(bert_cfsfdp_model.epsilon))
     print("threshold: {}".format(bert_cfsfdp_model.threshold))
