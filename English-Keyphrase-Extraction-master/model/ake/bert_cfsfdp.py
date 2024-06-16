@@ -18,6 +18,9 @@ from model.other.nltk_sense_to_embedding import NltkSenseToEmbedding
 T = TypeVar('T')
 
 
+# 内存消耗，4G
+
+
 class BERTCFSFDP(MetaMethod):
     def __init__(self, epsilon: float, threshold: float):
         self.epsilon = epsilon  # 截断距离
