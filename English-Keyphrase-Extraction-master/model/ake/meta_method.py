@@ -45,7 +45,7 @@ class MetaMethod:
         for oris, preds in self.output_list.items():
             oris_list = oris.split(sep=";")
             for pred in preds:
-                if pred in oris_list:
+                if pred in oris:
                     self.tp += 1
                 else:
                     self.fp += 1

@@ -23,7 +23,7 @@ class PositionRank(MetaMethod):
         json_line = json_line[:size]
         for line in json_line:
             text = line['source']
-            results = model.get_keywords(text, n_keywords=3)
+            results = model.get_keywords(text, n_keywords=5)
             predict_keywords = []
             # 构建结果
             for result in results:
@@ -40,7 +40,7 @@ class PositionRank(MetaMethod):
 if __name__ == '__main__':
     position_rank_model = PositionRank()
     position_rank_model.keyword_extraction("Inspec")
-    position_rank_model.show_output_list()
+    # position_rank_model.show_output_list()
     position_rank_model.compute_metric()
     print("single_tpr_rank_model.precision: {}".format(position_rank_model.precision))
     print("single_tpr_rank_model.recall: {}".format(position_rank_model.recall))

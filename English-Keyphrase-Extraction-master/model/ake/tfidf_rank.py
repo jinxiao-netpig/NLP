@@ -42,7 +42,7 @@ class TFIDFRank(MetaMethod):
         json_line = json_line[:test_size]
         for line in json_line:
             text = line['source']
-            results = model.get_keywords(text, n_keywords=3)
+            results = model.get_keywords(text, n_keywords=5)
             predict_keywords = []
             # 构建结果
             for result in results:
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     tfidf_rank_model = TFIDFRank()
     tfidf_rank_model.keyword_extraction("Inspec")
     tfidf_rank_model.compute_metric()
-    tfidf_rank_model.show_output_list()
+    # tfidf_rank_model.show_output_list()
     print("single_tpr_rank_model.precision: {}".format(tfidf_rank_model.precision))
     print("single_tpr_rank_model.recall: {}".format(tfidf_rank_model.recall))
     print("single_tpr_rank_model.f_score: {}".format(tfidf_rank_model.f_score))
