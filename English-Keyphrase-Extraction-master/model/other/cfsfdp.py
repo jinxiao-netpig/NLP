@@ -37,6 +37,10 @@ class CFSFDP:
         self.threshold = threshold
 
     def fit(self):
+        self.local_density_list = {}
+        self.relative_density_list = {}
+        self.density_peaks_list = {}
+        self.center_indices_list = {}
         self.build_local_density_list()  # 计算局部密度
         self.build_relative_density_list()  # 计算相对密度
         self.build_density_peaks_list()  # 计算密度峰值

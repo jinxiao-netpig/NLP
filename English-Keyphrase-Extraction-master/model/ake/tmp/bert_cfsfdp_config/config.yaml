@@ -1,4 +1,4 @@
 cfsfdp:
-  epsilon: 0.5
-  threshold: 3
-  learn_rate: 0
+  epsilon: 0.9
+  threshold: 429.49
+  learn_rate: 0.3

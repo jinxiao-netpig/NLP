@@ -87,8 +87,8 @@ class BERTCFSFDP(MetaMethod):
         # 划分句子
         texts = text.split(sep=".")
         for sentence in texts:
-            # 获得句子向量
-            sentence_embedding = self.bert_model.text_to_embedding(sentence)
+            # # 获得句子向量
+            # sentence_embedding = self.bert_model.text_to_embedding(sentence)
             # 将句子拆成单词，并进行停用词过滤以及词干还原
             words = nltk.word_tokenize(sentence)
             words_set = set(words)
@@ -171,6 +171,7 @@ class BERTCFSFDP(MetaMethod):
 
                 centers_num = len(self.cfsfdp.center_indices_list)
                 loss = centers_num - 6
+                logging.info("words number: {}".format(len(self.points)))
                 logging.info("centers_num: {}".format(centers_num))
                 logging.info("loss: {}".format(loss))
                 # 损失提前收敛就直接退出循环
@@ -190,7 +191,7 @@ if __name__ == '__main__':
     # bert_cfsfdp_model.keyword_extraction("Inspec")
     # bert_cfsfdp_model.show_output_list()
 
-    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=1)
+    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=429.49)
     bert_cfsfdp_model.filter_documents("Inspec")
     bert_cfsfdp_model.train_model(learning_rate=0.3)
     print("epsilon: {}".format(bert_cfsfdp_model.epsilon))

@@ -1,35 +1,37 @@
+import time
+
 import torch
 from transformers import BertTokenizer, BertModel
 
 if __name__ == '__main__':
-    # 加载预训练的BERT模型和tokenizer
+    time1 = time.time()
+
+    # 加载预训练的BERT模型和分词器
     tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
     model = BertModel.from_pretrained('bert-base-cased')
 
-
-    def get_sentence_embedding(sentence):
-        # 将句子编码为BERT输入格式
-        inputs = tokenizer(sentence, return_tensors='pt', truncation=True, padding=True, max_length=512)
-
-        # 将输入传递给BERT模型
-        with torch.no_grad():
-            outputs = model(**inputs)
-
-        # 提取最后一个隐藏层的输出
-        last_hidden_states = outputs.last_hidden_state
-
-        # 计算句子的embedding（例如，通过对所有token的embedding取平均值）
-        sentence_embedding = torch.mean(last_hidden_states, dim=1)
-
-        return sentence_embedding[0].numpy()
-
-
-    # 示例句子
+    # 输入句子
     sentence = "The quick brown fox jumps over the lazy dog."
 
-    # 获取句子的embedding
-    embedding = get_sentence_embedding(sentence)
+    # 对句子进行分词，并添加特殊标记 [CLS] 和 [SEP]
+    input_ids = tokenizer.encode(sentence, return_tensors='pt')
 
-    print("Sentence Embedding:", embedding)
-    print("Embedding Shape:", embedding.shape)
-    print("Embedding Type:", type(embedding))
+    # 获取BERT模型的输出
+    with torch.no_grad():
+        outputs = model(input_ids)
+
+    # 提取最后一层的隐藏状态
+    last_hidden_states = outputs.last_hidden_state
+
+    # 解码分词器的标记以匹配编码表示
+    tokens = tokenizer.convert_ids_to_tokens(input_ids[0])
+
+    time2 = time.time()
+    print("time cost: {}".format(time2 - time1))
+
+    # 打印每个词的编码
+    for token, vector in zip(tokens, last_hidden_states[0]):
+        print(f"Token: {token}")
+        print("vector length: {}".format(len(vector)))
+        print(f"Vector: {vector[:5]}...")  # 打印前5个值以示例
+        print()
