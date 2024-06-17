@@ -38,7 +38,7 @@ class BERTCFSFDP(MetaMethod):
         time1 = time.time()
 
         # 测试集取前500条数据
-        size = 500
+        size = 20
         json_line, _ = kex.get_benchmark_dataset(dataset_name)
         if size > len(json_line):
             size = len(json_line)
@@ -149,6 +149,28 @@ class BERTCFSFDP(MetaMethod):
         except Exception as e:
             logging.error("write error: ", e)
 
+    def compute_metric(self):
+        """
+        计算 P、R、F1
+
+        :return:
+        """
+
+        tp_fn_sum = 0
+        for oris, preds in self.output_list.items():
+            oris_list = oris.split(sep=";")
+            for pred in preds:
+                if pred in oris:
+                    self.tp += 1
+                else:
+                    self.fp += 1
+            tp_fn_sum += len(oris_list)
+        self.fn = tp_fn_sum - self.tp
+
+        self.precision = self.tp / (self.tp + self.fp)
+        self.recall = self.tp / (self.tp + self.fn)
+        self.f_score = 2 * self.precision * self.recall / (self.recall + self.precision)
+
     def train_model(self, learning_rate: float):
         super().train_model(learn_rate=learning_rate)
         epoch = 0
@@ -175,7 +197,7 @@ class BERTCFSFDP(MetaMethod):
                 logging.info("centers_num: {}".format(centers_num))
                 logging.info("loss: {}".format(loss))
                 # 损失提前收敛就直接退出循环
-                if 0 <= loss <= 2:
+                if 0 <= loss <= 4:
                     break
 
                 # 更新 threshold 参数，值越大，聚类数量越少
@@ -187,12 +209,18 @@ class BERTCFSFDP(MetaMethod):
 
 
 if __name__ == '__main__':
-    # bert_cfsfdp_model = BERTCFSFDP(epsilon=0.5, threshold=3)
-    # bert_cfsfdp_model.keyword_extraction("Inspec")
-    # bert_cfsfdp_model.show_output_list()
+    # 测试数据
+    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=150)
+    bert_cfsfdp_model.keyword_extraction("Inspec")
+    bert_cfsfdp_model.compute_metric()
+    bert_cfsfdp_model.show_output_list()
+    print("bert_cfsfdp_model.precision: {}".format(bert_cfsfdp_model.precision))
+    print("bert_cfsfdp_model.recall: {}".format(bert_cfsfdp_model.recall))
+    print("bert_cfsfdp_model.f_score: {}".format(bert_cfsfdp_model.f_score))
 
-    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=429.49)
-    bert_cfsfdp_model.filter_documents("Inspec")
-    bert_cfsfdp_model.train_model(learning_rate=0.3)
-    print("epsilon: {}".format(bert_cfsfdp_model.epsilon))
-    print("threshold: {}".format(bert_cfsfdp_model.threshold))
+    # # 训练数据
+    # bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=429.49)
+    # bert_cfsfdp_model.filter_documents("Inspec")
+    # bert_cfsfdp_model.train_model(learning_rate=0.3)
+    # print("epsilon: {}".format(bert_cfsfdp_model.epsilon))
+    # print("threshold: {}".format(bert_cfsfdp_model.threshold))
