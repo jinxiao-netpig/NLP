@@ -3,12 +3,10 @@ import time
 from typing import TypeVar
 
 import kex
-import nltk
 import numpy as np
 import spacy
 import yaml
 from nltk import WordNetLemmatizer
-from nltk.corpus import stopwords
 
 from model.ake.meta_method import MetaMethod
 from model.other.bert_to_embedding import BertToEmbedding
@@ -38,7 +36,7 @@ class BERTCFSFDP(MetaMethod):
         time1 = time.time()
 
         # 测试集取前500条数据
-        size = 20
+        size = 100
         json_line, _ = kex.get_benchmark_dataset(dataset_name)
         if size > len(json_line):
             size = len(json_line)
@@ -46,7 +44,7 @@ class BERTCFSFDP(MetaMethod):
 
         for line in json_line:
             text = line['source']
-            results = self.__keyword_extraction(text, n_keywords=3)
+            results = self.__keyword_extraction(text, n_keywords=5)
             predict_keywords = []
             # 构建结果
             for result in results:
@@ -87,39 +85,43 @@ class BERTCFSFDP(MetaMethod):
         # 划分句子
         texts = text.split(sep=".")
         for sentence in texts:
-            # # 获得句子向量
-            # sentence_embedding = self.bert_model.text_to_embedding(sentence)
-            # 将句子拆成单词，并进行停用词过滤以及词干还原
-            words = nltk.word_tokenize(sentence)
-            words_set = set(words)
-            words_set_lower = [word.lower() for word in words_set if word.isalpha()]
-            stopword_set = set(stopwords.words('english'))
-            words_set_with_stopword = [word for word in words_set_lower if word not in stopword_set]
-            # 词干还原
-            word_stems = []
-            for word in words_set_with_stopword:
-                doc = self.sen_to_words(word)
-                lemmatized_word = doc[0].lemma_
-                word_stems.append(lemmatized_word)
-
-            # 将句子拆成词组
-            phrases = []
-            doc = self.sen_to_words(sentence)
-            for chunk in doc.noun_chunks:
-                phrases.append(chunk.text)
-
-            words_phrases_list = word_stems + phrases
-            words_phrases_set = set(words_phrases_list)
-
-            # 获得词向量
-            for word in words_phrases_set:
-                word_embedding = self.bert_model.text_to_embedding(word)
-                sense_embedding = self.sence_encoder.text_to_embedding(word)
-                # # 词向量+句子向量+情感向量
-                # word_sen_sense_embedding = np.concatenate((word_embedding, sentence_embedding, sense_embedding))
-                # 词向量+情感向量
-                word_sen_sense_embedding = np.concatenate((word_embedding, sense_embedding))
-                word_to_embedding[word] = word_sen_sense_embedding
+            sentence += "."
+            dic = self.bert_model.text_to_token_embedding(sentence)
+            for word, vector in dic.items():
+                word_to_embedding[word] = np.concatenate((vector, self.sence_encoder.text_to_embedding(word)))
+            # # # 获得句子向量
+            # # sentence_embedding = self.bert_model.text_to_embedding(sentence)
+            # # 将句子拆成单词，并进行停用词过滤以及词干还原
+            # words = nltk.word_tokenize(sentence)
+            # words_set = set(words)
+            # words_set_lower = [word.lower() for word in words_set if word.isalpha()]
+            # stopword_set = set(stopwords.words('english'))
+            # words_set_with_stopword = [word for word in words_set_lower if word not in stopword_set]
+            # # 词干还原
+            # word_stems = []
+            # for word in words_set_with_stopword:
+            #     doc = self.sen_to_words(word)
+            #     lemmatized_word = doc[0].lemma_
+            #     word_stems.append(lemmatized_word)
+            #
+            # # 将句子拆成词组
+            # phrases = []
+            # doc = self.sen_to_words(sentence)
+            # for chunk in doc.noun_chunks:
+            #     phrases.append(chunk.text)
+            #
+            # words_phrases_list = word_stems + phrases
+            # words_phrases_set = set(words_phrases_list)
+            #
+            # # 获得词向量
+            # for word in words_phrases_set:
+            #     word_embedding = self.bert_model.text_to_embedding(word)
+            #     sense_embedding = self.sence_encoder.text_to_embedding(word)
+            #     # # 词向量+句子向量+情感向量
+            #     # word_sen_sense_embedding = np.concatenate((word_embedding, sentence_embedding, sense_embedding))
+            #     # 词向量+情感向量
+            #     word_sen_sense_embedding = np.concatenate((word_embedding, sense_embedding))
+            #     word_to_embedding[word] = word_sen_sense_embedding
 
         self.points = word_to_embedding
 
@@ -192,15 +194,15 @@ class BERTCFSFDP(MetaMethod):
                 self.cfsfdp.fit()
 
                 centers_num = len(self.cfsfdp.center_indices_list)
-                loss = centers_num - 6
+                loss = centers_num - 15
                 logging.info("words number: {}".format(len(self.points)))
                 logging.info("centers_num: {}".format(centers_num))
                 logging.info("loss: {}".format(loss))
-                # 损失提前收敛就直接退出循环
-                if 0 <= loss <= 4:
-                    break
+                # # 损失提前收敛就直接退出循环
+                # if 0 <= loss <= 4:
+                #     break
 
-                # 更新 threshold 参数，值越大，聚类数量越少
+                # 更新 epsilon 参数，值越大，聚类数量越少
                 self.threshold = self.threshold + loss * learning_rate
             logging.info("-------------------------------------------------------------")
 
@@ -210,7 +212,7 @@ class BERTCFSFDP(MetaMethod):
 
 if __name__ == '__main__':
     # 测试数据
-    bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=150)
+    bert_cfsfdp_model = BERTCFSFDP(epsilon=13, threshold=73)
     bert_cfsfdp_model.keyword_extraction("Inspec")
     bert_cfsfdp_model.compute_metric()
     bert_cfsfdp_model.show_output_list()
@@ -219,8 +221,8 @@ if __name__ == '__main__':
     print("bert_cfsfdp_model.f_score: {}".format(bert_cfsfdp_model.f_score))
 
     # # 训练数据
-    # bert_cfsfdp_model = BERTCFSFDP(epsilon=0.9, threshold=429.49)
+    # bert_cfsfdp_model = BERTCFSFDP(epsilon=13, threshold=80)
     # bert_cfsfdp_model.filter_documents("Inspec")
-    # bert_cfsfdp_model.train_model(learning_rate=0.3)
+    # bert_cfsfdp_model.train_model(learning_rate=0.03)
     # print("epsilon: {}".format(bert_cfsfdp_model.epsilon))
     # print("threshold: {}".format(bert_cfsfdp_model.threshold))

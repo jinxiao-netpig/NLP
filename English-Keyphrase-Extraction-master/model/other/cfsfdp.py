@@ -133,7 +133,7 @@ class CFSFDP:
         return relative_density
 
     def __get_distance(self, x: np.ndarray[float], y: np.ndarray[float],
-                       distance_pattern: str = "cosine_similarity") -> float:
+                       distance_pattern: str = "euclidean_distance") -> float:
         """
         计算两个数据点之间的距离
 
@@ -219,7 +219,7 @@ class CFSFDP:
         for item in distance_list:
             distance = item[1]
 
-            if distance > self.epsilon:
+            if distance <= self.epsilon:
                 local_density += 1
 
         return local_density
