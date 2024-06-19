@@ -39,7 +39,7 @@ class TopicRank(MetaMethod):
 
 if __name__ == '__main__':
     topic_rank_model = TopicRank()
-    topic_rank_model.keyword_extraction("Inspec")
+    topic_rank_model.keyword_extraction("Krapivin2009")
     topic_rank_model.compute_metric()
     # topic_rank_model.show_output_list()
     print("single_tpr_rank_model.precision: {}".format(topic_rank_model.precision))

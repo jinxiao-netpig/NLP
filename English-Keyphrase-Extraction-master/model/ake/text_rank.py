@@ -39,7 +39,7 @@ class TextRank(MetaMethod):
 
 if __name__ == '__main__':
     text_rank_model = TextRank()
-    text_rank_model.keyword_extraction("Inspec")
+    text_rank_model.keyword_extraction("Krapivin2009")
     text_rank_model.compute_metric()
     # text_rank_model.show_output_list()
     print("text_rank_model.precision: {}".format(text_rank_model.precision))

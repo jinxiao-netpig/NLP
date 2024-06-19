@@ -58,7 +58,7 @@ class LexRank(MetaMethod):
 
 if __name__ == '__main__':
     lex_rank_model = LexRank()
-    lex_rank_model.keyword_extraction("Inspec")
+    lex_rank_model.keyword_extraction("Krapivin2009")
     lex_rank_model.compute_metric()
     # lex_rank_model.show_output_list()
     print("single_tpr_rank_model.precision: {}".format(lex_rank_model.precision))

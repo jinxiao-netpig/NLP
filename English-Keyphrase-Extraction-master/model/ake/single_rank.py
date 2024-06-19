@@ -39,7 +39,7 @@ class SingleRank(MetaMethod):
 
 if __name__ == '__main__':
     single_rank_model = SingleRank()
-    single_rank_model.keyword_extraction("Inspec")
+    single_rank_model.keyword_extraction("Krapivin2009")
     single_rank_model.compute_metric()
     # single_rank_model.show_output_list()
     print("single_tpr_rank_model.precision: {}".format(single_rank_model.precision))

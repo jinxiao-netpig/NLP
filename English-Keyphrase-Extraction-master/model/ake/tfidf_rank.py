@@ -58,7 +58,7 @@ class TFIDFRank(MetaMethod):
 
 if __name__ == '__main__':
     tfidf_rank_model = TFIDFRank()
-    tfidf_rank_model.keyword_extraction("Inspec")
+    tfidf_rank_model.keyword_extraction("Krapivin2009")
     tfidf_rank_model.compute_metric()
     # tfidf_rank_model.show_output_list()
     print("single_tpr_rank_model.precision: {}".format(tfidf_rank_model.precision))
