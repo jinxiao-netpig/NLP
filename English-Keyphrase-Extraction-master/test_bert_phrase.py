@@ -2,7 +2,7 @@ if __name__ == '__main__':
     from nltk.tokenize import word_tokenize
     from nltk import pos_tag, ne_chunk
     from nltk.chunk import tree2conlltags
-    from transformers import BertTokenizer, BertModel
+    from transformers import T5Tokenizer, T5Model
     import torch
 
 
@@ -52,8 +52,8 @@ if __name__ == '__main__':
         phrases = extract_phrases(sentence)
 
         # 加载BERT模型和分词器
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-        model = BertModel.from_pretrained('bert-base-uncased')
+        tokenizer = T5Tokenizer.from_pretrained('t5-base')
+        model = T5Model.from_pretrained('t5-base')
 
         for phrase in phrases:
             # 对每个词组进行编码
