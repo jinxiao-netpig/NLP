@@ -77,7 +77,8 @@ def main():
     dataset, doc_list, labels, labels_stemed = data_process(setting_dict, args.dataset_dir, args.dataset_name)
     dataloader = DataLoader(dataset, num_workers=4, batch_size=args.batch_size)
     # 实例化T5模型
-    model = T5ForConditionalGeneration.from_pretrained("t5-base")
+    model = T5ForConditionalGeneration.from_pretrained(
+        r"C:\Users\HP\.cache\huggingface\hub\models--t5-base\snapshots\a9723ea7f1b39c1eae772870f3b547bf6ef7e6c1")
     # 配置模型的设备
     model.to(device)
 

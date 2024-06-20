@@ -1,4 +1,4 @@
 nltk==3.7
 transformers==4.23
-torch==1.9.1
+torch==2.0.1
 StanfordCoreNLP==3.9.1.1

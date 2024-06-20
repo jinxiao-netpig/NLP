@@ -31,7 +31,9 @@ def init(setting_dict):
     position_factor = setting_dict["position_factor"]
     length_factor = setting_dict["length_factor"]
 
-    tokenizer = T5Tokenizer.from_pretrained("t5-" + setting_dict["model"], model_max_length=MAX_LEN)
+    tokenizer = T5Tokenizer.from_pretrained(
+        r"C:\Users\HP\.cache\huggingface\hub\models--t5-base\snapshots\a9723ea7f1b39c1eae772870f3b547bf6ef7e6c1",
+        model_max_length=MAX_LEN)
 
 
 def get_PRF(num_c, num_e, num_s):
