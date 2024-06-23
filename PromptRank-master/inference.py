@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 import torch
@@ -99,12 +101,15 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
             # empty_output = model(input_ids=x, decoder_input_ids=de_input_ids)[2]
 
             for i in range(template_len, de_input_ids.shape[1] - 3):
+                # output 的第一个维度的长度是词的个数
+                # logits就是每个关键词以及它的embedding
                 logits = output[:, i, :]
                 logits = logits.softmax(dim=1)
                 logits = logits.cpu().numpy()
 
                 for j in range(de_input_ids.shape[0]):
                     if i < dic["de_input_len"][j]:
+                        # 注意，这里是累加
                         score[j] = score[j] + np.log(logits[j, int(de_input_ids[j][i + 1])])
                     elif i == dic["de_input_len"][j]:
                         score[j] = score[j] / np.power(dic["de_input_len"][j] - template_len, length_factor)
@@ -115,10 +120,12 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
             cos_score_list.extend(score)
             pos_list.extend(dic["pos"])
 
+    # cos_similarity_list 这个是最后全部算完的结果
     cos_similarity_list["doc_id"] = doc_id_list
     cos_similarity_list["candidate"] = candidate_list
     cos_similarity_list["score"] = cos_score_list
     cos_similarity_list["pos"] = pos_list
+    logging.info("cos_similarity_list: {}".format(cos_similarity_list))
     cosine_similarity_rank = pd.DataFrame(cos_similarity_list)
 
     for i in range(len(doc_list)):
