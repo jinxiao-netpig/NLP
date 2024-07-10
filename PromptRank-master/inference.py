@@ -58,6 +58,11 @@ def print_PRF(P, R, F1, N, log):
 
 
 def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, dataloader, device, log):
+    """
+    labels: 整个数据集的标签
+    labels_stemed: 整个数据集的标签的词形还原版
+    """
+
     init(setting_dict)
 
     model.eval()
@@ -80,8 +85,8 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
         # id：是由 enumerate 生成的索引，表示当前处理的是第几批数据
         # en_input_ids：是一个张量，包含一批输入序列的ID。每个序列都是源语言（英语）的句子表示，通常由词汇表的索引组成。
         #               形状为 (batch_size, sequence_length)
-        # en_input_mask
-        # de_input_ids
+        # en_input_mask：是一个张量，包含对应于 en_input_ids 的注意力掩码。掩码值通常是0或1，用于指示哪些位置是实际的输入词，哪些是填充词
+        # de_input_ids：是一个张量，包含一批解码器输入序列的ID。每个序列都是目标语言（德语）的句子表示，通常由词汇表的索引组成
         # dic
 
         en_input_ids = en_input_ids.to(device)

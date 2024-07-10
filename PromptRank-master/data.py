@@ -374,6 +374,7 @@ def data_process(setting_dict, dataset_dir, dataset_name):
 
     init(setting_dict)
 
+    # data 是一个字典，值是一个数据集中一条训练数据的已经处理好的原始文本
     if dataset_name == "SemEval2017":
         data, referneces = get_semeval2017_data(dataset_dir + "/docsutf8", dataset_dir + "/keys")
     elif dataset_name == "DUC2001":
