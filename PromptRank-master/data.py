@@ -317,6 +317,7 @@ def generate_doc_pairs(doc, candidates, idx):
     en_input_mask = en_input["attention_mask"]
 
     for id, can_and_pos in enumerate(candidates):
+        # 这里其实就已经把所有的输出都准备好了，并且已经编码了
         candidate = can_and_pos[0]
         # Remove stopwords in a candidate
         if remove(candidate):
@@ -369,7 +370,7 @@ def data_process(setting_dict, dataset_dir, dataset_name):
     """
     Core API in data.py which returns the dataset
 
-    :return: 数据集对象，文档列表，文档对应的关键词集合的列表，词形还原处理过的关键词集合的列表
+    :return: 包装过的数据集对象，文档列表，文档对应的关键词集合的列表，词形还原处理过的关键词集合的列表
     """
 
     init(setting_dict)
@@ -432,8 +433,8 @@ def data_process(setting_dict, dataset_dir, dataset_name):
         # Generate docs_paris for constructing dataset 
         # doc = doc.lower()
         doc = temp_en + "\"" + doc + "\""
-        doc_pairs, count = generate_doc_pairs(doc, candidates, idx)
-        docs_pairs.extend(doc_pairs)
+        doc_pairs, count = generate_doc_pairs(doc, candidates, idx)  # 这是一条记录文本的所有候选词的输出
+        docs_pairs.extend(doc_pairs)  # 这是整个数据集的所有候选词的输出
         t_n += count
 
     print("candidate_num: ", candidate_num)

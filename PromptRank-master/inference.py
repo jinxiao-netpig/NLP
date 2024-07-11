@@ -89,6 +89,7 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
         # de_input_ids：是一个张量，包含一批解码器输入序列的ID。每个序列都是目标语言（德语）的句子表示，通常由词汇表的索引组成
         # dic
 
+        # to() 是用来把向量放到指定设备上，比如 CPU 或 GPU
         en_input_ids = en_input_ids.to(device)
         en_input_mask = en_input_mask.to(device)
         de_input_ids = de_input_ids.to(device)
@@ -106,6 +107,9 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
             # empty_output = model(input_ids=x, decoder_input_ids=de_input_ids)[2]
 
             for i in range(template_len, de_input_ids.shape[1] - 3):
+                # 算候选词的得分
+                # template_len, de_input_ids.shape[1] - 3 选的就是候选词的位置范围
+
                 # output 的第一个维度的长度是词的个数
                 # logits就是每个关键词以及它的embedding
                 logits = output[:, i, :]
