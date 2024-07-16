@@ -31,6 +31,12 @@ class Configuration:
         return self.num_neighbors
 
     def getNumDimension(self):
+        """
+        获得坐标维度
+
+        :return: 坐标维度
+        """
+
         return self.num_dimension
 
     def getDelta(self):
