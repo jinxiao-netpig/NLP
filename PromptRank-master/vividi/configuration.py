@@ -5,7 +5,7 @@ class Configuration:
 
         :param n: 节点数量
         :param k: 邻居数量
-        :param num_iterations: 调整坐标的迭代次数（目前还不确定是迭代因子还是边权重）
+        :param num_iterations: 调整坐标的迭代次数
         :param d: 坐标的维度
         :param delta: 尺度因子（目前还不知道是做什么的）
         :param ce: 误差估计中的精度权重
