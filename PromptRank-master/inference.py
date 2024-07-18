@@ -100,6 +100,7 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
         # print(dic["de_input_len"])
         # exit(0)
 
+        # 这里是性能需求最高的地方
         with torch.no_grad():
             output = model(input_ids=en_input_ids, attention_mask=en_input_mask, decoder_input_ids=de_input_ids)[0]
             # print(en_output.shape)

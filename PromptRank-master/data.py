@@ -3,6 +3,7 @@ import codecs
 import json
 import os
 import re
+from typing import Tuple, List
 
 import nltk
 from nltk.corpus import stopwords
@@ -10,6 +11,8 @@ from stanfordcorenlp import StanfordCoreNLP
 from torch.utils.data import Dataset
 from tqdm import tqdm
 from transformers import T5Tokenizer
+
+from vividi.test_main import candidates_to_graph
 
 MAX_LEN = None
 enable_filter = None
@@ -308,13 +311,16 @@ def remove(text):
         return False
 
 
-def generate_doc_pairs(doc, candidates, idx):
+def generate_doc_pairs(doc, candidates: List[Tuple[str, Tuple[int, int]]], idx):
     count = 0
     doc_pairs = []
 
     en_input = tokenizer(doc, max_length=MAX_LEN, padding="max_length", truncation=True, return_tensors="pt")
     en_input_ids = en_input["input_ids"]
     en_input_mask = en_input["attention_mask"]
+
+    # todo: 在这里把图节点的信息放进来就行
+    G = candidates_to_graph(candidates=candidates)
 
     for id, can_and_pos in enumerate(candidates):
         # 这里其实就已经把所有的输出都准备好了，并且已经编码了
@@ -338,7 +344,11 @@ def generate_doc_pairs(doc, candidates, idx):
         #         for i in x[0]:
         #             print(tokenizer.decode(i))
         #         exit(0)
-        dic = {"de_input_len": de_input_len, "candidate": candidate, "idx": idx, "pos": can_and_pos[1][0]}
+        dic = {"de_input_len": de_input_len,
+               "candidate": candidate,
+               "idx": idx,
+               "pos": can_and_pos[1][0],
+               "candidate_node_score": G.nodes[candidate]['weight']}
 
         doc_pairs.append([en_input_ids, en_input_mask, de_input_ids, dic])
         # print(tokenizer.decode(en_input_ids[0]))
@@ -423,11 +433,12 @@ def data_process(setting_dict, dataset_dir, dataset_name):
 
         # Generate candidates (lower)
         cans = text_obj.keyphrase_candidate
+        # todo: 这里就把图构造出来
         candidates = []  # 候选词:词性
         for can, pos in cans:
             if enable_filter == True and len(can.split()) > 4:
                 continue
-            candidates.append([can.lower(), pos])
+            candidates.append((can.lower(), pos))
         candidate_num += len(candidates)
 
         # Generate docs_paris for constructing dataset 
