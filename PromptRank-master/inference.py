@@ -72,6 +72,7 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
     cos_score_list = []
     doc_id_list = []
     pos_list = []
+    candidate_node_score_list = []
 
     num_c_5 = num_c_10 = num_c_15 = 0
     num_e_5 = num_e_10 = num_e_15 = 0
@@ -129,12 +130,14 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
             candidate_list.extend(dic["candidate"])
             cos_score_list.extend(score)
             pos_list.extend(dic["pos"])
+            candidate_node_score_list.extend(dic["candidate_node_score"])
 
     # cos_similarity_list 这个是最后全部算完的结果
     cos_similarity_list["doc_id"] = doc_id_list
     cos_similarity_list["candidate"] = candidate_list
     cos_similarity_list["score"] = cos_score_list
     cos_similarity_list["pos"] = pos_list
+    cos_similarity_list["candidate_node_score"] = candidate_node_score_list
     logging.info("cos_similarity_list: {}".format(cos_similarity_list))
     cosine_similarity_rank = pd.DataFrame(cos_similarity_list)
 
@@ -147,7 +150,7 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
             # doc_results.loc[:,"pos"] = torch.Tensor(doc_results["pos"].values.astype(float)) / doc_len + position_factor / (doc_len ** 3)
             doc_results["pos"] = doc_results["pos"] / doc_len + position_factor / (doc_len ** 3)
             # 计算最终得分=相似性*位置
-            doc_results["score"] = doc_results["pos"] * doc_results["score"]
+            doc_results["score"] = doc_results["pos"] * doc_results["score"] * doc_results["candidate_node_score"]
         # * doc_results["score"].values.astype(float)
         ranked_keyphrases = doc_results.sort_values(by='score', ascending=False)
         top_k = ranked_keyphrases.reset_index(drop=True)

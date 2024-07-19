@@ -23,8 +23,8 @@ def get_setting_dict():
     setting_dict["model"] = "base"
     setting_dict["enable_filter"] = False
     setting_dict["enable_pos"] = True
-    # setting_dict["position_factor"] = 1.2e8
-    setting_dict["position_factor"] = 66
+    setting_dict["position_factor"] = 1.2e8
+    # setting_dict["position_factor"] = 66
     setting_dict["length_factor"] = 0.6
     return setting_dict
 
