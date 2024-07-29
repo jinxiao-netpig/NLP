@@ -478,6 +478,7 @@ def data_process(setting_dict, dataset_dir, dataset_name):
         # Generate docs_paris for constructing dataset 
         # doc = doc.lower()
         doc = temp_en + "\"" + doc + "\""
+        print("doc: ", doc)
         doc_pairs, count = generate_doc_pairs(doc, candidates, idx)  # 这是一条记录文本的所有候选词的输出
         docs_pairs.extend(doc_pairs)  # 这是整个数据集的所有候选词的输出
         t_n += count
