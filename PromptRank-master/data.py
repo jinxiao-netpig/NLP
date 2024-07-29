@@ -2,6 +2,7 @@
 import codecs
 import json
 import os
+import pickle
 import re
 from typing import Tuple, List
 
@@ -13,6 +14,8 @@ from tqdm import tqdm
 from transformers import T5Tokenizer
 
 from vividi.test_main import candidates_to_graph
+
+global_reviews = None
 
 MAX_LEN = None
 enable_filter = None
@@ -189,6 +192,27 @@ def get_long_data(file_path="data/nus/nus_test.json"):
                 labels[jsonl['name']] = keywords
             except:
                 raise ValueError
+    return data, labels
+
+
+def get_TripAdvisor_data(file_path="data/TripAdvisor/reviews.pickle"):
+    data = {}
+    labels = {}
+    assert os.path.exists(file_path)
+    reviews = pickle.load(open(file_path, 'rb'))
+    global global_reviews
+    # reviews 是一个 list
+    global_reviews = reviews
+
+    for i, review in tqdm(enumerate(reviews), desc="Loading Doc ..."):
+        # fea 只有一个，是个 str
+        (fea, adj, tem, sco) = review['template']  # feature, opinion, template, sentiment
+        doc = tem
+        doc = re.sub('\. ', ' . ', doc)
+        doc = re.sub(', ', ' , ', doc)
+        doc = doc.replace('\n', ' ')
+        data[i] = doc
+        labels[i] = [fea]
     return data, labels
 
 
@@ -398,6 +422,13 @@ def data_process(setting_dict, dataset_dir, dataset_name):
         data, referneces = get_short_data(dataset_dir + "/kp20k_valid200_test.json")
     elif dataset_name == "SemEval2010":
         data, referneces = get_short_data(dataset_dir + "/semeval_test.json")
+    # todo 添加读peter的那三个数据集
+    elif dataset_name == "TripAdvisor":
+        data, referneces = get_TripAdvisor_data(dataset_dir + "/reviews.pickle")
+    elif dataset_name == "Yelp":
+        data, referneces = get_TripAdvisor_data(dataset_dir + "/reviews.pickle")
+    elif dataset_name == "Amazon":
+        data, referneces = get_TripAdvisor_data(dataset_dir + "/MoviesAndTV/reviews.pickle")
     else:
         data, referneces = get_inspec_data(dataset_dir)
 

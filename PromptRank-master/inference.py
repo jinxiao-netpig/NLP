@@ -7,6 +7,8 @@ from nltk import PorterStemmer
 from tqdm import tqdm
 from transformers import T5Tokenizer
 
+from data import global_reviews
+
 pd.options.mode.chained_assignment = None
 
 MAX_LEN = None
@@ -149,8 +151,11 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
         if enable_pos == True:
             # doc_results.loc[:,"pos"] = torch.Tensor(doc_results["pos"].values.astype(float)) / doc_len + position_factor / (doc_len ** 3)
             doc_results["pos"] = doc_results["pos"] / doc_len + position_factor / (doc_len ** 3)
+            # doc_results["pos"] = doc_results["pos"] / doc_len + 17.5
             # 计算最终得分=相似性*位置
-            doc_results["score"] = doc_results["pos"] * doc_results["score"] * doc_results["candidate_node_score"]
+            doc_results["score"] = doc_results["pos"] * doc_results["score"] * doc_results[
+                "candidate_node_score"] * 1000
+            # doc_results["score"] = doc_results["pos"] * doc_results["score"]
         # * doc_results["score"].values.astype(float)
         ranked_keyphrases = doc_results.sort_values(by='score', ascending=False)
         top_k = ranked_keyphrases.reset_index(drop=True)
@@ -169,6 +174,13 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
 
         # log.logger.debug("Sorted_Candidate: {} \n".format(top_k_can))
         # log.logger.debug("Candidates_Dedup: {} \n".format(candidates_dedup))
+
+        # todo: 把新生成的关键词反写回pkl里
+        if global_reviews is not None:
+            guanjianci = candidates_dedup[0].split()
+            len_guanjianci = len(guanjianci)
+            if len_guanjianci != 0:
+                global_reviews[i]['template'][0] = guanjianci[len_guanjianci - 1]
 
         j = 0
         Matched = candidates_dedup[:15]
