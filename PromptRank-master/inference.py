@@ -1,4 +1,5 @@
 import logging
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -7,7 +8,7 @@ from nltk import PorterStemmer
 from tqdm import tqdm
 from transformers import T5Tokenizer
 
-from data import global_reviews
+from data import global_reviews, dataName
 
 pd.options.mode.chained_assignment = None
 
@@ -179,7 +180,7 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
         if global_reviews is not None:
             guanjianci = candidates_dedup[0].split()
             len_guanjianci = len(guanjianci)
-            if len_guanjianci != 0:
+            if len(candidates_dedup) != 0:
                 global_reviews[i]['template'][0] = guanjianci[len_guanjianci - 1]
 
         j = 0
@@ -222,6 +223,13 @@ def keyphrases_selection(setting_dict, doc_list, labels_stemed, labels, model, d
             num_e_15 += len(top_k[0:15])
 
         num_s += len(labels[i])
+
+    if global_reviews is not None:
+        dataname = dataName
+        with open(
+                "D:\\Program Files\\GithubRepositorySet\\NLP\\PromptRank-master\\data\\" + dataname + "\\reviews.pickle",
+                "wb") as file:
+            pickle.dump(global_reviews, file)
 
     p, r, f = get_PRF(num_c_5, num_e_5, num_s)
     print_PRF(p, r, f, 5, log)

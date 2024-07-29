@@ -17,6 +17,9 @@ from vividi.test_main import candidates_to_graph
 
 global_reviews = None
 
+dataName = ""
+dataDir = ""
+
 MAX_LEN = None
 enable_filter = None
 temp_en = None

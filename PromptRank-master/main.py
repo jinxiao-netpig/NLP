@@ -75,6 +75,8 @@ def main():
     log.logger.info("Start Testing ...")
 
     # 处理数据
+    global dataName
+    dataName = args.dataset_name
     dataset, doc_list, labels, labels_stemed = data_process(setting_dict, args.dataset_dir, args.dataset_name)
     dataloader = DataLoader(dataset, num_workers=4, batch_size=args.batch_size)
     # 实例化T5模型
